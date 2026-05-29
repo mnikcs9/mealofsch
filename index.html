@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>순천향대 점심 플랫폼</title>
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
+    <style>
+        :root {
+            --primary: #0055A5;
+            --bg-color: #F8F9FA;
+            --card-bg: #FFFFFF;
+            --text-main: #212529;
+            --text-muted: #6C757D;
+            --border-color: #DEE2E6;
+        }
+        
+        body { font-family: 'Pretendard', sans-serif; background-color: var(--bg-color); margin: 0; color: var(--text-main); }
+
+        .navbar { background-color: var(--card-bg); border-bottom: 1px solid var(--border-color); padding: 0 20px; display: flex; justify-content: center; position: relative; z-index: 10; }
+        .nav-inner { width: 100%; max-width: 1000px; display: flex; align-items: center; justify-content: space-between; height: 70px; }
+        .logo { font-size: 22px; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; }
+        .nav-menu { display: flex; gap: 30px; }
+        .nav-item { font-size: 16px; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: 0.2s; }
+        .nav-item:hover, .nav-item.active { color: var(--primary); }
+
+        .container { width: 100%; max-width: 1000px; margin: 30px auto; padding: 0 20px; box-sizing: border-box; }
+        .tab-content { display: none; animation: fadeIn 0.3s; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .recommend-banner { background: linear-gradient(135deg, #0055A5, #007BFF); color: white; padding: 16px 24px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; margin-bottom: 24px; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,85,165,0.15); }
+        .recommend-banner:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,85,165,0.2); }
+        .banner-text { font-size: 18px; font-weight: 700; }
+        
+        /* 검색창 및 드롭다운 결과창 스타일 */
+        .search-container { margin-bottom: 24px; position: relative; z-index: 5; }
+        .search-input { width: 100%; padding: 20px 24px; font-size: 18px; border: 2px solid var(--border-color); border-radius: 50px; box-sizing: border-box; outline: none; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+        .search-input:focus { border-color: var(--primary); }
+        
+        .search-results { position: absolute; top: 70px; left: 0; width: 100%; background: #fff; border-radius: 16px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); display: none; max-height: 250px; overflow-y: auto; border: 1px solid var(--border-color); }
+        .search-item { padding: 16px 24px; font-size: 16px; font-weight: 500; cursor: pointer; border-bottom: 1px solid #f1f3f5; transition: 0.2s; }
+        .search-item:last-child { border-bottom: none; }
+        .search-item:hover { background-color: #f8f9fa; color: var(--primary); padding-left: 28px; }
+        
+        .search-hint { margin-top: 10px; margin-left: 15px; font-size: 14px; color: var(--text-muted); }
+
+        #map { width: 100%; height: 550px; border-radius: 16px; border: 1px solid var(--border-color); z-index: 1; }
+
+        .card { background: var(--card-bg); border-radius: 16px; padding: 30px; margin-bottom: 20px; border: 1px solid var(--border-color); box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .card-title { font-size: 22px; font-weight: 700; margin-top: 0; margin-bottom: 20px; border-bottom: 2px solid var(--text-main); padding-bottom: 10px; display: inline-block;}
+        
+        .form-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
+        .form-control { padding: 14px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 15px; font-family: inherit; box-sizing: border-box; width: 100%; }
+        .form-control:focus { outline: none; border-color: var(--primary); }
+        .btn { padding: 14px 24px; font-size: 16px; font-weight: 600; border: none; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        .btn-primary { background-color: var(--primary); color: white; }
+        .btn-primary:hover { background-color: #004080; }
+        .btn-danger { background-color: #FA5252; color: white; padding: 8px 16px; font-size: 14px; }
+        .btn-danger:hover { background-color: #E03131; }
+
+        input[type="file"] { background-color: #f1f3f5; padding: 10px; cursor: pointer; }
+
+        /* 모달 팝업 */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background: #fff; width: 90%; max-width: 500px; border-radius: 16px; padding: 30px; position: relative; max-height: 85vh; overflow-y: auto; }
+        .modal-close { position: absolute; top: 20px; right: 20px; font-size: 28px; cursor: pointer; color: #999; line-height: 1; }
+        
+        .modal-header { border-bottom: 1px solid var(--border-color); padding-bottom: 15px; margin-bottom: 15px; }
+        .modal-title { font-size: 24px; font-weight: 800; margin: 0; color: var(--primary); }
+        
+        .section-title { font-size: 18px; font-weight: 700; margin: 20px 0 10px 0; }
+        .photo-container img { width: 100%; border-radius: 12px; border: 1px solid #eee; margin-top: 10px; object-fit: contain; max-height: 400px; background-color: #f8f9fa; }
+        .empty-photo { background: #f8f9fa; color: #adb5bd; padding: 40px 0; text-align: center; border-radius: 12px; font-size: 14px; margin-top: 10px; border: 1px dashed #ced4da; }
+        
+        .review-box { background: var(--bg-color); padding: 15px; border-radius: 8px; margin-bottom: 10px; font-size: 14px; }
+        .review-input-group { display: flex; gap: 10px; margin-top: 15px; }
+
+        /* 관리자용 테이블 */
+        .admin-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .admin-table th { text-align: left; padding: 12px; background-color: #f8f9fa; border-bottom: 2px solid var(--border-color); }
+        .admin-table td { padding: 12px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
+    </style>
+    <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=mlxyqndqs3"></script>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-inner">
+            <div class="logo">SCH 맛집 포털</div>
+            <div class="nav-menu">
+                <div class="nav-item active" onclick="switchTab('tab-home', this)">지도·검색</div>
+                <div class="nav-item" onclick="switchTab('tab-suggest', this)">의견제보</div>
+                <div class="nav-item" onclick="switchTab('tab-admin', this)">관리자</div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        
+        <div id="tab-home" class="tab-content active">
+            <div class="recommend-banner" onclick="pickLunch()">
+                <span class="banner-text">결정이 어려우신가요? 시스템이 하나를 무작위로 골라드립니다.</span>
+                <span class="banner-icon">🎲 추천받기</span>
+            </div>
+
+            <div class="search-container">
+                <input type="text" id="searchInput" class="search-input" placeholder="식당 이름을 검색해보세요." onkeyup="handleSearch()" onfocus="handleSearch()">
+                <div id="searchResults" class="search-results"></div>
+                <div class="search-hint">현재 <strong id="mapRestCount">0</strong>개의 식당이 지도에 표시되고 있습니다.</div>
+            </div>
+
+            <div id="map"></div>
+        </div>
+
+        <div id="tab-suggest" class="tab-content">
+            <div class="card">
+                <h2 class="card-title">식당 정보 제보</h2>
+                <div class="form-group">
+                    <input type="text" id="suggestName" class="form-control" placeholder="식당 이름">
+                    <textarea id="suggestComment" class="form-control" rows="4" placeholder="폐업, 위치 변경 등 상세한 의견을 적어주세요."></textarea>
+                    <button class="btn btn-primary" onclick="submitSuggestion()">제보 제출하기</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-admin" class="tab-content">
+            <div id="admin-lock" class="card" style="text-align: center; padding: 50px 20px;">
+                <h2 class="card-title">관리자 인증</h2>
+                <div style="display: flex; justify-content: center; gap: 10px;">
+                    <input type="password" id="adminPassword" class="form-control" placeholder="비밀번호(1234)" style="width: 200px; text-align: center;">
+                    <button class="btn btn-primary" onclick="checkAdminPassword()">인증</button>
+                </div>
+            </div>
+
+            <div id="admin-dashboard" style="display: none;">
+                <div class="card">
+                    <h2 class="card-title">신규 식당 간편 등록</h2>
+                    <div class="form-group">
+                        <input type="text" id="restName" class="form-control" placeholder="식당명 (필수)">
+                        <div style="display: flex; gap: 15px;">
+                            <input type="text" id="restLat" class="form-control" placeholder="위도 (Lat) (필수)">
+                            <input type="text" id="restLng" class="form-control" placeholder="경도 (Lng) (필수)">
+                        </div>
+                        <label style="font-weight: 600; margin-top: 10px; font-size: 15px;">📋 메뉴판 사진 첨부 (선택)</label>
+                        <input type="file" id="restPhoto" class="form-control" accept="image/*">
+                    </div>
+                    <button class="btn btn-primary" style="width: 100%; margin-top: 10px;" onclick="addRestaurant()">데이터베이스에 등록</button>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title">등록된 식당 목록 관리</h2>
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>식당명</th>
+                                <th style="width: 80px; text-align: right;">관리</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-rest-tbody">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="detailModal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            
+            <div class="modal-header">
+                <h2 id="modalTitle" class="modal-title">식당 이름</h2>
+            </div>
+
+            <div class="section-title">📋 메뉴판 확인</div>
+            <div class="photo-container" id="modalMenuPhoto">
+                </div>
+
+            <div class="section-title">교직원 리뷰</div>
+            <div id="modalReviews"></div>
+            
+            <div class="review-input-group">
+                <input type="text" id="newReviewInput" class="form-control" placeholder="간단한 한 줄 평을 남겨주세요.">
+                <button class="btn btn-primary" style="padding: 14px 20px;" onclick="addReview()">등록</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const defaultRestaurants = [
+            { id: 1, name: "탕정집쭈꾸미 신정호수직영점", lat: 36.7761, lng: 126.9822, photo: "", reviews: ["스트레스 풀리는 매운맛입니다."] },
+            { id: 2, name: "아산가야밀면", lat: 36.7718, lng: 126.9745, photo: "", reviews: ["여름엔 항상 여기로 갑니다."] }
+        ];
+
+        let restaurants = [], map, markers = [];
+        let currentModalRestId = null;
+
+        window.onload = function() {
+            const savedData = localStorage.getItem('sch_lunch_v8');
+            if (savedData) { restaurants = JSON.parse(savedData); }
+            else { restaurants = defaultRestaurants; saveMasterData(); }
+
+            initMap();
+            drawMarkers(restaurants);
+            renderAdminList(); // 관리자 목록 렌더링
+            
+            // 검색창 외부 클릭 시 드롭다운 닫기
+            document.addEventListener('click', function(e) {
+                const searchBox = document.querySelector('.search-container');
+                if (!searchBox.contains(e.target)) {
+                    document.getElementById('searchResults').style.display = 'none';
+                }
+            });
+        };
+
+        function saveMasterData() { 
+            localStorage.setItem('sch_lunch_v8', JSON.stringify(restaurants)); 
+            renderAdminList(); // 데이터 변경 시 관리자 목록도 업데이트
+        }
+
+        function switchTab(tabId, el) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            el.classList.add('active');
+            if (tabId === 'tab-home' && map) setTimeout(() => { map.refresh(true); }, 100);
+        }
+
+        function initMap() {
+            var mapOptions = { center: new naver.maps.LatLng(36.7730, 126.9500), zoom: 13 };
+            map = new naver.maps.Map('map', mapOptions);
+        }
+
+        function drawMarkers(filteredList) {
+            markers.forEach(m => m.setMap(null));
+            markers = [];
+
+            filteredList.forEach(rest => {
+                let marker = new naver.maps.Marker({
+                    position: new naver.maps.LatLng(rest.lat, rest.lng),
+                    map: map,
+                    title: rest.name
+                });
+
+                naver.maps.Event.addListener(marker, 'click', function() { openModal(rest.id); });
+                markers.push(marker);
+            });
+
+            document.getElementById('mapRestCount').innerText = filteredList.length;
+        }
+
+        // --- 자동완성 검색 기능 ---
+        function handleSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const resultBox = document.getElementById('searchResults');
+            
+            if (query === "") {
+                resultBox.style.display = 'none';
+                drawMarkers(restaurants);
+                return;
+            }
+
+            const filtered = restaurants.filter(r => r.name.toLowerCase().includes(query));
+            drawMarkers(filtered);
+
+            // 검색 결과 드롭다운 표시
+            if (filtered.length > 0) {
+                resultBox.innerHTML = filtered.map(r => 
+                    `<div class="search-item" onclick="selectRestaurant(${r.id})">📍 ${r.name}</div>`
+                ).join('');
+                resultBox.style.display = 'block';
+            } else {
+                resultBox.innerHTML = `<div class="search-item" style="color:#999; cursor:default;">검색 결과가 없습니다.</div>`;
+                resultBox.style.display = 'block';
+            }
+        }
+
+        // 검색 결과 목록에서 특정 식당 클릭 시
+        function selectRestaurant(id) {
+            document.getElementById('searchResults').style.display = 'none'; // 드롭다운 닫기
+            document.getElementById('searchInput').value = ''; // 검색창 초기화
+            
+            const rest = restaurants.find(r => r.id === id);
+            if (rest) {
+                // 지도 중심을 해당 식당으로 부드럽게 이동하고 팝업 열기
+                map.morph(new naver.maps.LatLng(rest.lat, rest.lng), 16);
+                openModal(id);
+                drawMarkers(restaurants); // 마커 전체 원복
+            }
+        }
+
+        function pickLunch() {
+            if(restaurants.length === 0) return alert("추천할 식당이 없습니다.");
+            const picked = restaurants[Math.floor(Math.random() * restaurants.length)];
+            
+            map.morph(new naver.maps.LatLng(picked.lat, picked.lng), 16);
+            openModal(picked.id);
+        }
+
+        // --- 모달 (메뉴판 팝업) 기능 ---
+        function openModal(id) {
+            const rest = restaurants.find(r => r.id === id);
+            if(!rest) return;
+            currentModalRestId = id;
+
+            document.getElementById('modalTitle').innerText = rest.name;
+            
+            const photoDiv = document.getElementById('modalMenuPhoto');
+            if (rest.photo) {
+                photoDiv.innerHTML = `<img src="${rest.photo}" alt="메뉴판 사진">`;
+            } else {
+                photoDiv.innerHTML = `<div class="empty-photo">📷 등록된 메뉴판 사진이 없습니다.</div>`;
+            }
+
+            renderReviews();
+            document.getElementById('detailModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('detailModal').style.display = 'none';
+        }
+
+        function renderReviews() {
+            const rest = restaurants.find(r => r.id === currentModalRestId);
+            const reviewContainer = document.getElementById('modalReviews');
+            reviewContainer.innerHTML = '';
+
+            if(!rest.reviews || rest.reviews.length === 0) {
+                reviewContainer.innerHTML = '<div style="color:#999; font-size:14px;">등록된 리뷰가 없습니다. 첫 리뷰를 남겨보세요!</div>';
+                return;
+            }
+            rest.reviews.forEach(rev => { reviewContainer.innerHTML += `<div class="review-box">${rev}</div>`; });
+        }
+
+        function addReview() {
+            const input = document.getElementById('newReviewInput').value.trim();
+            if(!input) return alert("리뷰 내용을 입력해주세요.");
+            const restIndex = restaurants.findIndex(r => r.id === currentModalRestId);
+            if(!restaurants[restIndex].reviews) restaurants[restIndex].reviews = [];
+            
+            restaurants[restIndex].reviews.push(input);
+            saveMasterData();
+            renderReviews();
+            document.getElementById('newReviewInput').value = '';
+        }
+
+        // --- 관리자 기능 ---
+        function checkAdminPassword() {
+            if(document.getElementById('adminPassword').value === "1234") {
+                document.getElementById('admin-lock').style.display = 'none';
+                document.getElementById('admin-dashboard').style.display = 'block';
+            } else alert("비밀번호가 일치하지 않습니다.");
+        }
+
+        function addRestaurant() {
+            const name = document.getElementById('restName').value;
+            const lat = parseFloat(document.getElementById('restLat').value);
+            const lng = parseFloat(document.getElementById('restLng').value);
+            const photoInput = document.getElementById('restPhoto');
+
+            if (!name || isNaN(lat) || isNaN(lng)) return alert("식당명, 위도, 경도를 정확히 입력해주세요.");
+
+            let newRest = { id: Date.now(), name: name, lat: lat, lng: lng, photo: "", reviews: [] };
+
+            if (photoInput.files && photoInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    newRest.photo = e.target.result;
+                    saveAndRenderNewRest(newRest);
+                };
+                reader.readAsDataURL(photoInput.files[0]);
+            } else {
+                saveAndRenderNewRest(newRest);
+            }
+        }
+
+        function saveAndRenderNewRest(newRest) {
+            restaurants.push(newRest);
+            saveMasterData();
+            drawMarkers(restaurants);
+            alert(`[${newRest.name}] 등록이 완료되었습니다.`);
+            ['restName', 'restLat', 'restLng', 'restPhoto'].forEach(id => document.getElementById(id).value = '');
+        }
+
+        // 관리자용 목록 렌더링 및 삭제 기능
+        function renderAdminList() {
+            const tbody = document.getElementById('admin-rest-tbody');
+            if (!tbody) return;
+            
+            if (restaurants.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="2" style="text-align:center; color:#999; padding:20px;">등록된 식당이 없습니다.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = restaurants.map(r => `
+                <tr>
+                    <td style="font-weight: 600;">${r.name}</td>
+                    <td style="text-align: right;">
+                        <button class="btn btn-danger" onclick="deleteRestaurant(${r.id})">삭제</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function deleteRestaurant(id) {
+            if (confirm("정말 이 식당을 목록에서 삭제하시겠습니까? (이 작업은 되돌릴 수 없습니다.)")) {
+                restaurants = restaurants.filter(r => r.id !== id);
+                saveMasterData(); // 로컬스토리지 저장 및 관리자 목록 재렌더링
+                drawMarkers(restaurants); // 지도 마커 갱신
+                alert("삭제되었습니다.");
+            }
+        }
+
+        function submitSuggestion() {
+            alert("제보가 완료되었습니다.");
+            ['suggestName', 'suggestComment'].forEach(id => document.getElementById(id).value = '');
+        }
+    </script>
+</body>
+</html>
