@@ -2,467 +2,859 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>순천향대 점심 플랫폼</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MealofSCH - 순천향대 점심 플랫폼</title>
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
     <style>
         :root {
-            --primary: #0055A5;
-            --bg-color: #F8F9FA;
-            --card-bg: #FFFFFF;
-            --text-main: #212529;
-            --text-muted: #6C757D;
-            --border-color: #DEE2E6;
+            --primary: #0055A5; --bg-color: #F4F6F8; --sidebar-bg: #FFFFFF; --card-bg: #FFFFFF;
+            --text-main: #212529; --text-muted: #6C757D; --border-color: #E5E8EB; --sidebar-width: 250px;
         }
         
-        body { font-family: 'Pretendard', sans-serif; background-color: var(--bg-color); margin: 0; color: var(--text-main); }
+        body { font-family: 'Pretendard', sans-serif; background-color: var(--bg-color); margin: 0; color: var(--text-main); overflow: hidden; display: flex; height: 100vh; }
 
-        .navbar { background-color: var(--card-bg); border-bottom: 1px solid var(--border-color); padding: 0 20px; display: flex; justify-content: center; position: relative; z-index: 10; }
-        .nav-inner { width: 100%; max-width: 1000px; display: flex; align-items: center; justify-content: space-between; height: 70px; }
-        .logo { font-size: 22px; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; }
-        .nav-menu { display: flex; gap: 30px; }
-        .nav-item { font-size: 16px; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: 0.2s; }
-        .nav-item:hover, .nav-item.active { color: var(--primary); }
+        /* 좌측 사이드바 */
+        .sidebar { width: var(--sidebar-width); background-color: var(--sidebar-bg); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; transition: 0.3s; flex-shrink: 0; z-index: 200; overflow-x: hidden; }
+        .sidebar.collapsed { width: 0; border-right: none; }
+        .sidebar-header { padding: 25px 20px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; white-space: nowrap; }
+        .logo { font-size: 24px; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; cursor: pointer; }
+        .nav-menu { flex: 1; padding: 20px 15px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; white-space: nowrap; }
+        .nav-item { padding: 14px 18px; font-size: 15px; font-weight: 600; color: var(--text-muted); cursor: pointer; border-radius: 12px; transition: 0.2s; display: flex; align-items: center; justify-content: space-between; }
+        .nav-item:hover { background-color: #F8F9FA; color: var(--primary); }
+        .nav-item.active { background-color: #EBF3FC; color: var(--primary); font-weight: 700; }
+        .badge { background-color: #FA5252; color: white; font-size: 11px; padding: 3px 7px; border-radius: 10px; font-weight: 700; }
 
-        .container { width: 100%; max-width: 1000px; margin: 30px auto; padding: 0 20px; box-sizing: border-box; }
-        .tab-content { display: none; animation: fadeIn 0.3s; }
-        .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* 관리자 분리 메뉴 */
+        .admin-menu-group { display: none; flex-direction: column; gap: 8px; margin-top: 10px; border-top: 1px dashed var(--border-color); padding-top: 10px; }
+        .admin-nav-item { color: #D35400; }
+        .admin-nav-item:hover { background-color: #FDEDEC; color: #C0392B; }
+        .admin-nav-item.active { background-color: #FADBD8; color: #C0392B; font-weight: 700; }
 
-        .recommend-banner { background: linear-gradient(135deg, #0055A5, #007BFF); color: white; padding: 16px 24px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; margin-bottom: 24px; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,85,165,0.15); }
-        .recommend-banner:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,85,165,0.2); }
-        .banner-text { font-size: 18px; font-weight: 700; }
+        /* 우측 메인 영역 */
+        .main-wrapper { flex: 1; display: flex; flex-direction: column; height: 100vh; position: relative; width: 100%; min-width: 0; }
+        .topbar { background-color: var(--card-bg); height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; border-bottom: 1px solid var(--border-color); z-index: 50; flex-shrink: 0; }
+        .btn-toggle { font-size: 16px; background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 5px 10px; transition: 0.2s; }
+        .btn-toggle:hover { color: var(--text-main); }
+        .mode-indicator { background: #E9ECEF; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 700; color: #495057; cursor: pointer; transition: 0.2s; }
+        .mode-indicator:hover { filter: brightness(0.95); }
+
+        .content-container { padding: 25px; flex: 1; overflow-y: auto; box-sizing: border-box; -webkit-overflow-scrolling: touch; }
+        .tab-content { display: none; animation: fadeIn 0.25s ease; max-width: 1200px; margin: 0 auto; height: 100%; }
+        .tab-content.active { display: flex; flex-direction: column; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* 스플릿 뷰 (홈 탭) */
+        .split-layout { display: flex; gap: 20px; height: 100%; width: 100%; position: relative; }
+        .map-section { flex: 2; display: flex; flex-direction: column; min-width: 0; position: relative; height: 100%; }
         
-        /* 검색창 및 드롭다운 */
-        .search-container { margin-bottom: 24px; position: relative; z-index: 5; }
-        .search-input { width: 100%; padding: 20px 24px; font-size: 18px; border: 2px solid var(--border-color); border-radius: 50px; box-sizing: border-box; outline: none; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
-        .search-input:focus { border-color: var(--primary); }
+        .info-section { flex: 1; min-width: 380px; background: var(--card-bg); border-radius: 16px; border: 1px solid var(--border-color); display: flex; flex-direction: column; box-shadow: 0 4px 15px rgba(0,0,0,0.05); overflow: hidden; height: 100%; }
+        #infoPlaceholder { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #999; font-size: 15px; font-weight: 500; background: #fafbfc; }
+        #infoContent { display: none; flex-direction: column; height: 100%; }
         
-        .search-results { position: absolute; top: 70px; left: 0; width: 100%; background: #fff; border-radius: 16px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); display: none; max-height: 250px; overflow-y: auto; border: 1px solid var(--border-color); }
-        .search-item { padding: 16px 24px; font-size: 16px; font-weight: 500; cursor: pointer; border-bottom: 1px solid #f1f3f5; transition: 0.2s; }
-        .search-item:last-child { border-bottom: none; }
-        .search-item:hover { background-color: #f8f9fa; color: var(--primary); padding-left: 28px; }
+        .info-header { padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+        .info-title { font-size: 20px; font-weight: 800; color: var(--primary); margin: 0; }
+        .btn-close-info { cursor: pointer; font-size: 24px; color: #999; border: none; background: none; line-height: 1; display: none; } /* PC 뷰 숨김 */
+        .info-body { padding: 20px; overflow-y: auto; flex: 1; }
         
-        .search-hint { margin-top: 10px; margin-left: 15px; font-size: 14px; color: var(--text-muted); }
+        .search-container { margin-bottom: 10px; position: absolute; top: 15px; left: 15px; right: 15px; z-index: 10; }
+        .search-input { width: 100%; padding: 15px 20px; font-size: 16px; border: none; border-radius: 12px; box-sizing: border-box; outline: none; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .search-results { position: absolute; top: 55px; left: 0; width: 100%; background: #fff; border-radius: 12px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); display: none; max-height: 250px; overflow-y: auto; }
+        .search-item { padding: 12px 20px; font-size: 15px; cursor: pointer; border-bottom: 1px solid #f1f3f5; }
+        .search-item:hover { background-color: #f8f9fa; color: var(--primary); }
+        
+        .chip-container { display: flex; gap: 6px; position: absolute; top: 75px; left: 15px; z-index: 10; flex-wrap: wrap; }
+        .chip { background: #FFFFFF; border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; color: #495057; cursor: pointer; transition: 0.15s; box-shadow: 0 2px 5px rgba(0,0,0,0.05);}
+        .chip:hover { border-color: var(--primary); color: var(--primary); background: #EBF3FC; }
+        
+        #map { width: 100%; flex: 1; border-radius: 16px; border: 1px solid var(--border-color); }
 
-        #map { width: 100%; height: 550px; border-radius: 16px; border: 1px solid var(--border-color); z-index: 1; }
-
-        .card { background: var(--card-bg); border-radius: 16px; padding: 30px; margin-bottom: 20px; border: 1px solid var(--border-color); box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-        .card-title { font-size: 22px; font-weight: 700; margin-top: 0; margin-bottom: 20px; border-bottom: 2px solid var(--text-main); padding-bottom: 10px; display: inline-block;}
-        
-        .form-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
-        .form-control { padding: 14px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 15px; font-family: inherit; box-sizing: border-box; width: 100%; }
+        /* 공통 폼 UI */
+        .card { background: var(--card-bg); border-radius: 16px; padding: 25px; margin-bottom: 24px; border: 1px solid var(--border-color); }
+        .card-title { font-size: 20px; font-weight: 700; margin-top: 0; margin-bottom: 20px; color: var(--text-main); }
+        .form-group { display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px; }
+        .form-control { padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px; box-sizing: border-box; width: 100%; }
         .form-control:focus { outline: none; border-color: var(--primary); }
         
-        .btn { padding: 14px 24px; font-size: 16px; font-weight: 600; border: none; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        .btn { padding: 10px 16px; font-size: 14px; font-weight: 600; border: none; border-radius: 8px; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 5px; }
         .btn-primary { background-color: var(--primary); color: white; }
         .btn-primary:hover { background-color: #004080; }
-        .btn-danger { background-color: #FA5252; color: white; padding: 8px 12px; font-size: 13px; }
-        .btn-danger:hover { background-color: #E03131; }
-        .btn-edit { background-color: #6C757D; color: white; padding: 8px 12px; font-size: 13px; margin-bottom: 5px; }
-        .btn-edit:hover { background-color: #495057; }
-        .btn-save { background-color: #2B8A3E; color: white; padding: 8px 12px; font-size: 13px; margin-bottom: 5px; }
-        .btn-save:hover { background-color: #23b23e; }
-
-        input[type="file"] { background-color: #f1f3f5; padding: 10px; cursor: pointer; }
-
-        /* 모달 팝업 */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: #fff; width: 90%; max-width: 500px; border-radius: 16px; padding: 30px; position: relative; max-height: 85vh; overflow-y: auto; }
-        .modal-close { position: absolute; top: 20px; right: 20px; font-size: 28px; cursor: pointer; color: #999; line-height: 1; }
+        .btn-outline { background-color: #fff; color: var(--primary); border: 1px solid var(--primary); }
         
-        .modal-header { border-bottom: 1px solid var(--border-color); padding-bottom: 15px; margin-bottom: 15px; }
-        .modal-title { font-size: 24px; font-weight: 800; margin: 0; color: var(--primary); }
+        .btn-group-equal { display: flex; gap: 8px; width: 100%; }
+        .btn-group-equal .btn { flex: 1; }
+        .btn-edit { background-color: #E9ECEF; color: #495057; }
+        .btn-danger { background-color: #FFF5F5; color: #FA5252; border: 1px solid #FFE3E3; }
+        .btn-success { background-color: #EBFBEE; color: #2B8A3E; border: 1px solid #D3F9D8; }
         
-        .section-title { font-size: 18px; font-weight: 700; margin: 20px 0 10px 0; }
-        .photo-container img { width: 100%; border-radius: 12px; border: 1px solid #eee; margin-top: 10px; object-fit: contain; max-height: 400px; background-color: #f8f9fa; }
-        .empty-photo { background: #f8f9fa; color: #adb5bd; padding: 40px 0; text-align: center; border-radius: 12px; font-size: 14px; margin-top: 10px; border: 1px dashed #ced4da; }
-        
-        .review-box { background: var(--bg-color); padding: 15px; border-radius: 8px; margin-bottom: 10px; font-size: 14px; }
-        .review-input-group { display: flex; gap: 10px; margin-top: 15px; }
+        input[type="file"] { background-color: #f8f9fa; padding: 10px; border-radius: 8px; border: 1px dashed #ccc; font-size:13px; }
 
-        /* 관리자용 테이블 */
-        .admin-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 15px; }
-        .admin-table th { text-align: left; padding: 12px; background-color: #f8f9fa; border-bottom: 2px solid var(--border-color); }
-        .admin-table td { padding: 12px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
-        .edit-input { padding: 8px; border: 1px solid var(--primary); border-radius: 4px; font-size: 14px; width: 100%; box-sizing: border-box; }
+        /* 테이블 및 리스트 */
+        .table-responsive { width: 100%; overflow-x: auto; }
+        .toss-list { width: 100%; border-collapse: collapse; min-width: 700px; }
+        .toss-list th { text-align: left; padding: 15px 10px; background-color: #f8f9fa; border-bottom: 2px solid var(--border-color); color: #495057; font-size: 14px; }
+        .toss-list td { padding: 15px 10px; border-bottom: 1px solid #F2F4F6; vertical-align: middle; }
+        
+        .tag-badge { background: #F1F3F5; color: #495057; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; margin-right: 4px; display: inline-block; margin-bottom: 4px; }
+        .time-badge { background: #EBF3FC; color: var(--primary); padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 700; display: inline-block; }
+
+        .copy-btn { background: #E9ECEF; border: none; padding: 3px 8px; border-radius: 4px; font-size: 11px; cursor: pointer; color: #495057; margin-left: 5px; font-weight: 600;}
+        .like-btn { font-weight: 700; font-size: 14px; color: #FA5252; cursor: pointer; border: 1px solid #FFE3E3; background: #FFF5F5; padding: 6px 12px; border-radius: 20px; display: inline-block; transition: 0.1s;}
+        .like-btn:active { transform: scale(0.95); }
+
+        /* 리뷰 전용 우측 슬라이드 창 */
+        .slide-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); display: none; z-index: 1000; opacity: 0; transition: opacity 0.3s; }
+        .slide-overlay.show { display: block; opacity: 1; }
+        .slide-panel { position: fixed; top: 0; right: -400px; width: 100%; max-width: 380px; height: 100vh; background: #fff; z-index: 1010; box-shadow: -5px 0 20px rgba(0,0,0,0.1); transition: right 0.3s cubic-bezier(0.25, 0.1, 0.25, 1); display: flex; flex-direction: column; }
+        .slide-panel.open { right: 0; }
+        
+        .photo-container img { width: 100%; border-radius: 12px; border: 1px solid #eee; margin-top: 5px; object-fit: contain; max-height: 250px; background-color: #f8f9fa; }
+        .empty-photo { background: #f8f9fa; color: #adb5bd; padding: 30px 0; text-align: center; border-radius: 12px; font-size: 13px; border: 1px dashed #ced4da; }
+        .review-box { background: var(--bg-color); padding: 12px; border-radius: 8px; margin-bottom: 8px; font-size: 14px; display: flex; justify-content: space-between; align-items: flex-start; }
+        .dup-warning { background: #FFF5F5; color: #FA5252; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; display: inline-block; margin-top: 5px; }
+
+        /* 공통 팝업 모달 규격 */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(2px); }
+        .modal-content { background: #fff; width: 90%; max-width: 450px; border-radius: 20px; padding: 30px; position: relative; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
+        
+        /* 모바일 최적화 */
+        @media (max-width: 768px) {
+            .sidebar { position: absolute; height: 100vh; box-shadow: 5px 0 15px rgba(0,0,0,0.1); }
+            .split-layout { flex-direction: column; }
+            .info-section { display: none; position: absolute; bottom: 0; left: 0; width: 100%; height: 50%; border-radius: 20px 20px 0 0; z-index: 20; box-shadow: 0 -5px 20px rgba(0,0,0,0.15); min-width: 0; }
+            .info-section.mobile-open { display: flex; }
+            .btn-close-info { display: block; } /* 모바일에서는 닫기 버튼 활성화 */
+            #infoPlaceholder { display: none !important; }
+        }
     </style>
-    <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=mlxyqndqs3"></script>
+    <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=여기에_본인의_키값_입력"></script>
 </head>
 <body>
 
-    <nav class="navbar">
-        <div class="nav-inner">
-            <div class="logo">SCH 맛집 포털</div>
-            <div class="nav-menu">
-                <div class="nav-item active" onclick="switchTab('tab-home', this)">지도·검색</div>
-                <div class="nav-item" onclick="switchTab('tab-suggest', this)">의견제보</div>
-                <div class="nav-item" onclick="switchTab('tab-admin', this)">관리자</div>
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo" onclick="goToHome()">MealofSCH</div>
+        </div>
+        <div class="nav-menu">
+            <div class="nav-item" onclick="triggerRandomPick()">🎲 랜덤 메뉴 추천</div>
+            <div class="nav-item active" onclick="switchTab('tab-home', this)">📍 검색</div>
+            <div class="nav-item" onclick="switchTab('tab-list', this)">📋 전체 식당 목록</div>
+            <div class="nav-item" onclick="switchTab('tab-suggest', this)">✍️ 식당 제보</div>
+            <div style="flex: 1;"></div>
+            
+            <div class="nav-item" id="btnAdminLogin" onclick="switchTab('tab-admin-login', this)">⚙️ 관리자 로그인</div>
+            
+            <div class="admin-menu-group" id="adminMenuGroup">
+                <div class="nav-item admin-nav-item" onclick="switchTab('tab-admin-suggest', this)">📥 제보함 <span class="badge" id="adminBadge" style="display:none;">0</span></div>
+                <div class="nav-item admin-nav-item" onclick="switchTab('tab-admin-add', this)">➕ 신규 식당 등록</div>
+                <div class="nav-item admin-nav-item" onclick="switchTab('tab-admin-manage', this)">🛠️ 식당 목록 관리</div>
             </div>
         </div>
     </nav>
 
-    <div class="container">
-        
-        <div id="tab-home" class="tab-content active">
-            <div class="recommend-banner" onclick="pickLunch()">
-                <span class="banner-text">결정이 어려우신가요? 시스템이 하나를 무작위로 골라드립니다.</span>
-                <span class="banner-icon">🎲 추천받기</span>
-            </div>
+    <div class="main-wrapper">
+        <header class="topbar">
+            <button class="btn-toggle" id="toggleBtn" onclick="toggleSidebar()">❮❮</button>
+            <div class="mode-indicator" id="modeIndicator" onclick="toggleAdminMode()" title="클릭 시 로그아웃">👤 사용자 모드</div>
+        </header>
 
-            <div class="search-container">
-                <input type="text" id="searchInput" class="search-input" placeholder="식당 이름을 검색해보세요." onkeyup="handleSearch()" onfocus="handleSearch()">
-                <div id="searchResults" class="search-results"></div>
-                <div class="search-hint">현재 <strong id="mapRestCount">0</strong>개의 식당이 지도에 표시되고 있습니다.</div>
-            </div>
-
-            <div id="map"></div>
-        </div>
-
-        <div id="tab-suggest" class="tab-content">
-            <div class="card">
-                <h2 class="card-title">식당 정보 제보</h2>
-                <div class="form-group">
-                    <input type="text" id="suggestName" class="form-control" placeholder="식당 이름">
-                    <textarea id="suggestComment" class="form-control" rows="4" placeholder="폐업, 위치 변경 등 상세한 의견을 적어주세요."></textarea>
-                    <button class="btn btn-primary" onclick="submitSuggestion()">제보 제출하기</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="tab-admin" class="tab-content">
-            <div id="admin-lock" class="card" style="text-align: center; padding: 50px 20px;">
-                <h2 class="card-title">관리자 인증</h2>
-                <div style="display: flex; justify-content: center; gap: 10px;">
-                    <input type="password" id="adminPassword" class="form-control" placeholder="비밀번호(1234)" style="width: 200px; text-align: center;">
-                    <button class="btn btn-primary" onclick="checkAdminPassword()">인증</button>
-                </div>
-            </div>
-
-            <div id="admin-dashboard" style="display: none;">
-                <div class="card">
-                    <h2 class="card-title">신규 식당 간편 등록</h2>
-                    <div class="form-group">
-                        <input type="text" id="restName" class="form-control" placeholder="식당명 (필수)">
-                        <div style="display: flex; gap: 15px;">
-                            <input type="text" id="restLat" class="form-control" placeholder="위도 (Lat) (필수)">
-                            <input type="text" id="restLng" class="form-control" placeholder="경도 (Lng) (필수)">
+        <div class="content-container">
+            
+            <div id="tab-home" class="tab-content active" style="max-width: none; padding:0;">
+                <div class="split-layout">
+                    <div class="map-section">
+                        <div class="search-container">
+                            <input type="text" id="searchInput" class="search-input" placeholder="식당명 또는 해시태그 검색" onkeyup="handleSearch()" onfocus="handleSearch()">
+                            <div id="searchResults" class="search-results"></div>
                         </div>
-                        <label style="font-weight: 600; margin-top: 10px; font-size: 15px;">📋 메뉴판 사진 첨부 (선택)</label>
-                        <input type="file" id="restPhoto" class="form-control" accept="image/*">
+                        <div class="chip-container">
+                            <span class="chip" onclick="quickFilter('#국물')">#국물</span>
+                            <span class="chip" onclick="quickFilter('#혼밥')">#혼밥</span>
+                            <span class="chip" onclick="quickFilter('#가성비')">#가성비</span>
+                            <span class="chip" onclick="quickFilter('#회식추천')">#회식추천</span>
+                        </div>
+                        <div id="map"></div>
                     </div>
-                    <button class="btn btn-primary" style="width: 100%; margin-top: 10px;" onclick="addRestaurant()">데이터베이스에 등록</button>
-                </div>
-
-                <div class="card">
-                    <h2 class="card-title">등록된 식당 목록 관리</h2>
-                    <p style="color: var(--text-muted); font-size: 14px; margin-top:-10px;">목록에서 바로 수정(이름, 위도, 경도) 및 삭제가 가능합니다.</p>
-                    <table class="admin-table">
-                        <thead>
-                            <tr>
-                                <th style="width: 35%;">식당명</th>
-                                <th style="width: 45%;">위치 정보 (위도 / 경도)</th>
-                                <th style="width: 20%; text-align: center;">관리</th>
-                            </tr>
-                        </thead>
-                        <tbody id="admin-rest-tbody"></tbody>
-                    </table>
+                    
+                    <div class="info-section" id="infoPanel">
+                        <div id="infoPlaceholder">
+                            <div style="font-size: 40px; margin-bottom: 15px;">👈</div>
+                            지도에서 식당을 선택하거나 검색해주세요.
+                        </div>
+                        
+                        <div id="infoContent">
+                            <div class="info-header">
+                                <h2 class="info-title" id="infoTitle">식당명</h2>
+                                <button class="btn-close-info" onclick="closeInfoPanel()">×</button>
+                            </div>
+                            <div class="info-body">
+                                <div class="btn-group-equal" style="margin-bottom: 15px;">
+                                    <button class="btn btn-edit" id="infoLikeBtn" style="background:#FFF5F5; color:#FA5252; font-weight:700;">❤️ 추천하기</button>
+                                    <button class="btn btn-outline" onclick="copyShareInfo()">🔗 주소 복사</button>
+                                </div>
+                                <div id="infoMetaArea" style="margin-bottom:15px; font-size:14px; color:var(--text-muted); line-height: 1.6;"></div>
+                                
+                                <div style="font-size: 15px; font-weight: 700; margin: 15px 0 5px;">📋 메뉴판</div>
+                                <div class="photo-container" id="infoMenuPhoto"></div>
+                                
+                                <div style="font-size: 15px; font-weight: 700; margin: 25px 0 10px;">💬 교직원 리뷰</div>
+                                <div id="infoReviews"></div>
+                                
+                                <div style="display: flex; gap: 8px; margin-top: 15px;">
+                                    <input type="text" id="newReviewInput" class="form-control" placeholder="한 줄 평 남기기" style="padding: 10px;" onkeypress="if(event.keyCode===13) addReview()">
+                                    <button class="btn btn-primary" style="padding: 10px 15px; white-space: nowrap;" onclick="addReview()">등록</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
 
+            <div id="tab-list" class="tab-content">
+                <div class="card">
+                    <h2 class="card-title">교직원 연동 맛집 목록</h2>
+                    <div class="table-responsive">
+                        <table class="toss-list">
+                            <thead><tr><th style="width: 25%;">식당명</th><th style="width: 40%;">주소</th><th style="width: 20%;">태그</th><th style="width: 15%; text-align: center;">리뷰/추천</th></tr></thead>
+                            <tbody id="user-list-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-suggest" class="tab-content">
+                <div class="card">
+                    <h2 class="card-title">식당 제보</h2>
+                    <div class="form-group">
+                        <input type="text" id="suggestName" class="form-control" placeholder="식당명 (필수)">
+                        <input type="text" id="suggestAddr" class="form-control" placeholder="식당 지번/도로명 주소 (필수)">
+                        <input type="text" id="suggestTime" class="form-control" placeholder="이동 소요 시간 (예: 도보 5분 / 차량 10분)">
+                        <input type="text" id="suggestTags" class="form-control" placeholder="해시태그 자율 입력 (예: #국물 #혼밥 - 띄어쓰기로 구분)">
+                        <label style="font-weight: 600; font-size: 14px;">📋 메뉴판 사진 첨부 (필수)</label>
+                        <input type="file" id="suggestPhoto" class="form-control" accept="image/*">
+                        <button class="btn btn-primary" style="padding: 14px; margin-top: 10px;" onclick="submitSuggestion()">제보서 발송하기 🚀</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-admin-login" class="tab-content">
+                <div class="card" style="text-align: center; padding: 60px 20px; max-width: 400px; margin: 50px auto;">
+                    <h2 class="card-title" style="border:none;">관리자 인증</h2>
+                    <div class="form-group">
+                        <input type="password" id="adminPassword" class="form-control" placeholder="비밀번호(1234)" style="text-align: center;" onkeypress="if(event.keyCode===13) checkAdminPassword()">
+                        <button class="btn btn-primary" onclick="checkAdminPassword()">로그인</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-admin-suggest" class="tab-content">
+                <div class="card" style="background-color: #FFFDF4; border-color: #FFEAA7;">
+                    <h2 class="card-title" style="color: #D39E00;">📥 건의 제보함</h2>
+                    <div class="table-responsive">
+                        <table class="toss-list">
+                            <thead><tr><th>식당정보 / 주소</th><th>태그 및 사진</th><th style="text-align: center; width: 160px;">처리</th></tr></thead>
+                            <tbody id="admin-suggest-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-admin-add" class="tab-content">
+                <div class="card">
+                    <h2 class="card-title">신규 식당 직접 등록</h2>
+                    <div class="form-group">
+                        <input type="text" id="restName" class="form-control" placeholder="식당명">
+                        <input type="text" id="restAddr" class="form-control" placeholder="식당 주소">
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="restLat" class="form-control" placeholder="위도 (Lat)">
+                            <input type="text" id="restLng" class="form-control" placeholder="경도 (Lng)">
+                        </div>
+                        <input type="text" id="restTime" class="form-control" placeholder="소요 시간 (예: 차량 5분)">
+                        <input type="text" id="restTags" class="form-control" placeholder="해시태그 (예: #국물 #가성비)">
+                        <label style="font-weight: 600; font-size: 14px;">📋 메뉴판 사진 첨부</label>
+                        <input type="file" id="restPhoto" class="form-control" accept="image/*">
+                        <button class="btn btn-primary" style="padding: 14px;" onclick="addRestaurant()">등록 완료</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-admin-manage" class="tab-content">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h2 class="card-title" style="margin:0;">식당 목록 관리</h2>
+                        <button class="btn btn-success" style="padding: 8px 12px; font-size: 13px;" onclick="downloadCSV()">📥 엑셀 백업</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="toss-list">
+                            <thead><tr><th style="width: 20%;">식당명</th><th style="width: 50%;">주소 및 좌표</th><th style="width: 30%; text-align: center;">제어</th></tr></thead>
+                            <tbody id="admin-rest-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
 
-    <div id="detailModal" class="modal-overlay">
-        <div class="modal-content">
-            <span class="modal-close" onclick="closeModal()">&times;</span>
-            <div class="modal-header"><h2 id="modalTitle" class="modal-title">식당 이름</h2></div>
-            <div class="section-title">📋 메뉴판 확인</div>
-            <div class="photo-container" id="modalMenuPhoto"></div>
-            <div class="section-title">교직원 리뷰</div>
-            <div id="modalReviews"></div>
-            <div class="review-input-group">
-                <input type="text" id="newReviewInput" class="form-control" placeholder="간단한 한 줄 평을 남겨주세요.">
-                <button class="btn btn-primary" style="padding: 14px 20px;" onclick="addReview()">등록</button>
+    <div class="slide-overlay" id="slideOverlay" onclick="closeSlidePanel()"></div>
+    <div class="slide-panel" id="slidePanel">
+        <div class="info-header">
+            <h2 class="info-title" id="slideTitle">리뷰</h2>
+            <button class="btn-close-info" onclick="closeSlidePanel()" style="display: block;">×</button>
+        </div>
+        <div class="info-body" style="display: flex; flex-direction: column; height: 100%;">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <button class="btn-like-big" id="slideLikeBtn" style="width: 100%; border: 1px solid #FFE3E3; background: #FFF5F5; padding: 12px; border-radius: 12px; font-weight: 700; color: #FA5252; cursor: pointer;">❤️ 추천하기</button>
             </div>
+            <div style="flex: 1; overflow-y: auto;" id="slideReviews"></div>
+            <div style="display: flex; gap: 8px; margin-top: 15px; flex-shrink: 0;">
+                <input type="text" id="slideNewReview" class="form-control" placeholder="한 줄 평 남기기" style="padding: 10px;" onkeypress="if(event.keyCode===13) addReviewFromSlide()">
+                <button class="btn btn-primary" style="white-space:nowrap;" onclick="addReviewFromSlide()">등록</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="adminReviewModal">
+        <div class="modal-content">
+            <div class="info-header" style="padding: 0 0 15px 0; margin-bottom: 15px; border-bottom: 1px solid #eee;">
+                <h2 class="info-title" style="font-size:20px;">리뷰 관리</h2>
+                <button class="btn-close-info" onclick="closeAdminReviewModal()" style="display:block; position:absolute; top:25px; right:25px;">×</button>
+            </div>
+            <div id="adminReviewList" style="max-height: 400px; overflow-y: auto;"></div>
         </div>
     </div>
 
     <script>
         const defaultRestaurants = [
-            { id: 1, name: "탕정집쭈꾸미 신정호수직영점", lat: 36.7761, lng: 126.9822, photo: "", reviews: ["스트레스 풀리는 매운맛입니다."] },
-            { id: 2, name: "아산가야밀면", lat: 36.7718, lng: 126.9745, photo: "", reviews: ["여름엔 항상 여기로 갑니다."] }
+            { id: 1, name: "탕정집쭈꾸미 신정호수직영점", address: "충남 아산시 신정호길 33-1", lat: 36.7761, lng: 126.9822, photo: "", reviews: ["주차가 편하고 매콤해요."], tags: ["#매콤", "#신정호", "#회식추천"], likes: 12, isHidden: false, time: "차량 8분" },
+            { id: 2, name: "아산가야밀면", address: "충남 아산시 시민로 429", lat: 36.7718, lng: 126.9745, photo: "", reviews: ["여름 필수 코스입니다."], tags: ["#면요리", "#시원한", "#가성비"], likes: 25, isHidden: false, time: "차량 10분" }
         ];
 
-        let restaurants = [], map, markers = [];
-        let currentModalRestId = null;
-        let editingRestId = null; // 현재 수정 중인 식당 ID를 추적
+        let restaurants = [], suggestions = [], map, markers = [];
+        let currentInfoRestId = null, editingRestId = null, slideRestId = null;
+        let isAdmin = false;
 
         window.onload = function() {
-            const savedData = localStorage.getItem('sch_lunch_v9');
-            if (savedData) { restaurants = JSON.parse(savedData); }
-            else { restaurants = defaultRestaurants; saveMasterData(); }
+            const savedData = localStorage.getItem('sch_master_v13_2');
+            if (savedData) restaurants = JSON.parse(savedData);
+            else { restaurants = defaultRestaurants; saveMasterDataSilent(); }
+
+            const savedSuggest = localStorage.getItem('sch_suggest_v13_2');
+            if (savedSuggest) suggestions = JSON.parse(savedSuggest);
 
             initMap();
-            drawMarkers(restaurants);
-            renderAdminList(); 
-            
-            document.addEventListener('click', function(e) {
-                const searchBox = document.querySelector('.search-container');
-                if (!searchBox.contains(e.target)) { document.getElementById('searchResults').style.display = 'none'; }
-            });
+            updateAppView();
         };
 
-        function saveMasterData() { 
-            localStorage.setItem('sch_lunch_v9', JSON.stringify(restaurants)); 
-            renderAdminList(); 
+        // 데이터 백그라운드 저장 (화면 새로고침 없이 실시간 렌더링 지원용)
+        function saveMasterDataSilent() { localStorage.setItem('sch_master_v13_2', JSON.stringify(restaurants)); }
+        
+        // 전체 UI 강제 갱신 함수 (지도 오류 차단 안전장치 적용)
+        function updateAppView() {
+            // 1순위: 표(Table)와 리스트 무조건 렌더링
+            renderUserList();
+            if (isAdmin) { 
+                renderAdminList(); 
+                renderAdminSuggestList(); 
+            }
+            
+            // 배지 처리
+            const badge = document.getElementById('adminBadge');
+            if(suggestions.length > 0) { badge.innerText = suggestions.length; badge.style.display = 'inline-block'; } 
+            else { badge.style.display = 'none'; }
+
+            // 2순위: 지도 렌더링 (예외 처리 적용으로 여기서 오류나도 앞의 리스트들은 보존됨)
+            try {
+                const activeList = restaurants.filter(r => !r.isHidden);
+                drawMarkers(activeList);
+            } catch(e) {
+                console.warn("지도 API 로드 지연:", e);
+            }
+        }
+
+        // 유틸: 텍스트 복사
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => alert("복사되었습니다. 📋")).catch(() => {
+                const tempInput = document.createElement("input");
+                tempInput.value = text; document.body.appendChild(tempInput); tempInput.select(); document.execCommand("copy"); document.body.removeChild(tempInput);
+                alert("복사되었습니다. 📋");
+            });
+        }
+
+        // --- 네비게이션 제어 ---
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const toggleBtn = document.getElementById('toggleBtn');
+            sidebar.classList.toggle('collapsed');
+            if(sidebar.classList.contains('collapsed')) { toggleBtn.innerHTML = "❯❯"; } 
+            else { toggleBtn.innerHTML = "❮❮"; }
+            setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 300);
         }
 
         function switchTab(tabId, el) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
-            el.classList.add('active');
-            if (tabId === 'tab-home' && map) setTimeout(() => { map.refresh(true); }, 100);
+            if(el) el.classList.add('active');
+            
+            if (window.innerWidth <= 768 && tabId !== 'tab-home') { 
+                document.getElementById('sidebar').classList.add('collapsed'); 
+                document.getElementById('toggleBtn').innerHTML = "❯❯"; 
+            }
+            if (tabId === 'tab-home' && map) setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 100);
         }
 
-        function initMap() {
-            var mapOptions = { center: new naver.maps.LatLng(36.7696, 126.9314), zoom: 15 };
-            map = new naver.maps.Map('map', mapOptions);
+        function goToHome() {
+            switchTab('tab-home', document.querySelectorAll('.nav-item')[1]);
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchResults').style.display = 'none';
+            try { map.morph(new naver.maps.LatLng(36.7696, 126.9314), 15); } catch(e){}
+            closeInfoPanel(); 
         }
 
-        function drawMarkers(filteredList, highlightId = null) {
-            markers.forEach(m => m.setMap(null));
-            markers = [];
+        // 로그아웃 기능 추가 (클릭 시 사용자 모드로 전환)
+        function toggleAdminMode() {
+            if(isAdmin) {
+                if(confirm("관리자 모드를 종료하고 사용자 모드로 돌아가시겠습니까?")) {
+                    isAdmin = false;
+                    document.getElementById('btnAdminLogin').style.display = 'flex'; 
+                    document.getElementById('adminMenuGroup').style.display = 'none'; 
+                    
+                    const indicator = document.getElementById('modeIndicator');
+                    indicator.innerHTML = '👤 사용자 모드'; 
+                    indicator.style.background = '#E9ECEF';
+                    indicator.style.color = '#495057';
+                    goToHome();
+                }
+            }
+        }
 
-            filteredList.forEach(rest => {
-                let markerOptions = { position: new naver.maps.LatLng(rest.lat, rest.lng), map: map, title: rest.name };
-                if (highlightId === rest.id) { markerOptions.animation = naver.maps.Animation.BOUNCE; }
+        // --- 검색 및 지도 ---
+        function initMap() { 
+            try { map = new naver.maps.Map('map', { center: new naver.maps.LatLng(36.7696, 126.9314), zoom: 15 }); }
+            catch(e) { console.warn("지도 초기화 대기 중..."); }
+        }
 
-                let marker = new naver.maps.Marker(markerOptions);
+        function drawMarkers(list, highlightId = null) {
+            markers.forEach(m => m.setMap(null)); markers = [];
+            list.forEach(rest => {
+                let opts = { position: new naver.maps.LatLng(rest.lat, rest.lng), map: map, title: rest.name };
+                if (highlightId === rest.id) opts.animation = naver.maps.Animation.BOUNCE;
+                let marker = new naver.maps.Marker(opts);
                 naver.maps.Event.addListener(marker, 'click', function() { 
-                    if(marker.getAnimation() !== null) { marker.setAnimation(null); }
-                    openModal(rest.id); 
+                    if(marker.getAnimation()) marker.setAnimation(null);
+                    openInfoPanel(rest.id); 
                 });
                 markers.push(marker);
             });
-
-            document.getElementById('mapRestCount').innerText = filteredList.length;
         }
 
         function handleSearch() {
             const query = document.getElementById('searchInput').value.toLowerCase().trim();
             const resultBox = document.getElementById('searchResults');
+            const activeList = restaurants.filter(r => !r.isHidden);
             
-            if (query === "") {
-                resultBox.style.display = 'none';
-                drawMarkers(restaurants);
-                return;
-            }
-
-            const filtered = restaurants.filter(r => r.name.toLowerCase().includes(query));
-            drawMarkers(filtered);
-
+            if (query === "") { resultBox.style.display = 'none'; try { drawMarkers(activeList); } catch(e){} return; }
+            
+            const filtered = activeList.filter(r => r.name.toLowerCase().includes(query) || r.tags.some(tag => tag.toLowerCase().includes(query)));
+            try { drawMarkers(filtered); } catch(e){}
             if (filtered.length > 0) {
-                resultBox.innerHTML = filtered.map(r => 
-                    `<div class="search-item" onclick="selectRestaurant(${r.id})">📍 ${r.name}</div>`
-                ).join('');
+                resultBox.innerHTML = filtered.map(r => `<div class="search-item" onclick="selectRestaurant(${r.id})">📍 ${r.name}</div>`).join('');
                 resultBox.style.display = 'block';
             } else {
-                resultBox.innerHTML = `<div class="search-item" style="color:#999; cursor:default;">검색 결과가 없습니다.</div>`;
+                resultBox.innerHTML = `<div class="search-item" style="color:#999; cursor:default;">결과가 없습니다.</div>`;
                 resultBox.style.display = 'block';
             }
         }
+
+        function quickFilter(tag) { document.getElementById('searchInput').value = tag; handleSearch(); }
 
         function selectRestaurant(id) {
-            document.getElementById('searchResults').style.display = 'none'; 
+            document.getElementById('searchResults').style.display = 'none';
             const rest = restaurants.find(r => r.id === id);
-            if (rest) {
-                map.morph(new naver.maps.LatLng(rest.lat, rest.lng), 16);
-                drawMarkers(restaurants, id); 
+            if (rest) { 
+                try { map.morph(new naver.maps.LatLng(rest.lat, rest.lng), 16); drawMarkers(restaurants.filter(r => !r.isHidden), id); } catch(e){}
+                openInfoPanel(id); 
             }
         }
 
-        function pickLunch() {
-            if(restaurants.length === 0) return alert("추천할 식당이 없습니다.");
-            const picked = restaurants[Math.floor(Math.random() * restaurants.length)];
-            map.morph(new naver.maps.LatLng(picked.lat, picked.lng), 16);
-            drawMarkers(restaurants, picked.id);
+        function triggerRandomPick() {
+            const activeList = restaurants.filter(r => !r.isHidden);
+            if(activeList.length === 0) return alert("식당이 없습니다.");
+            
+            switchTab('tab-home', document.querySelectorAll('.nav-item')[1]);
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchResults').style.display = 'none';
+            
+            const picked = activeList[Math.floor(Math.random() * activeList.length)];
+            try { map.morph(new naver.maps.LatLng(picked.lat, picked.lng), 16); drawMarkers(activeList, picked.id); } catch(e){}
+            setTimeout(() => { openInfoPanel(picked.id); }, 500);
         }
 
-        function openModal(id) {
-            const rest = restaurants.find(r => r.id === id);
-            if(!rest) return;
-            currentModalRestId = id;
+        // --- 스플릿 뷰 우측 패널 제어 (모달 대체) ---
+        function openInfoPanel(id) {
+            const rest = restaurants.find(r => r.id === id); if(!rest) return;
+            currentInfoRestId = id;
+            
+            document.getElementById('infoPlaceholder').style.display = 'none';
+            document.getElementById('infoContent').style.display = 'flex';
+            if(window.innerWidth <= 768) { document.getElementById('infoPanel').classList.add('mobile-open'); }
 
-            document.getElementById('modalTitle').innerText = rest.name;
-            const photoDiv = document.getElementById('modalMenuPhoto');
-            if (rest.photo) {
-                photoDiv.innerHTML = `<img src="${rest.photo}" alt="메뉴판 사진">`;
-            } else {
-                photoDiv.innerHTML = `<div class="empty-photo">📷 등록된 메뉴판 사진이 없습니다.</div>`;
-            }
+            document.getElementById('infoTitle').innerText = rest.name;
+            const likeBtn = document.getElementById('infoLikeBtn');
+            likeBtn.innerText = `❤️ 추천하기 ${rest.likes}`;
+            likeBtn.onclick = function() { increaseLike(rest.id, likeBtn); }; // 즉시 반영
+            
+            document.getElementById('infoMetaArea').innerHTML = `
+                <div><strong>📍 주소:</strong> ${rest.address || '정보 없음'}</div>
+                <div style="margin-top:4px;"><strong>⏱️ 시간:</strong> <span class="time-badge">${rest.time || '정보 없음'}</span></div>
+                <div style="margin-top:8px;">${rest.tags.map(t => `<span class="tag-badge">${t}</span>`).join('')}</div>
+            `;
+            
+            const photoDiv = document.getElementById('infoMenuPhoto');
+            if (rest.photo) photoDiv.innerHTML = `<img src="${rest.photo}">`;
+            else photoDiv.innerHTML = `<div class="empty-photo">📷 등록된 메뉴판 사진이 없습니다.</div>`;
 
-            renderReviews();
-            document.getElementById('detailModal').style.display = 'flex';
+            renderInfoReviews();
+            document.getElementById('infoPanel').style.display = 'flex';
+            setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 100);
         }
 
-        function closeModal() { document.getElementById('detailModal').style.display = 'none'; }
+        function closeInfoPanel() { 
+            document.getElementById('infoPlaceholder').style.display = 'flex';
+            document.getElementById('infoContent').style.display = 'none';
+            if(window.innerWidth <= 768) { document.getElementById('infoPanel').classList.remove('mobile-open'); }
+            currentInfoRestId = null;
+        }
 
-        function renderReviews() {
-            const rest = restaurants.find(r => r.id === currentModalRestId);
-            const reviewContainer = document.getElementById('modalReviews');
-            reviewContainer.innerHTML = '';
+        function copyShareInfo() {
+            const rest = restaurants.find(r => r.id === currentInfoRestId); if(!rest) return;
+            copyText(`[MealofSCH 점심추천]\n📍 식당명: ${rest.name}\n🏠 주소: ${rest.address || '정보 없음'}\n⏱️ 시간: ${rest.time || '정보 없음'}`);
+        }
 
-            if(!rest.reviews || rest.reviews.length === 0) {
-                reviewContainer.innerHTML = '<div style="color:#999; font-size:14px;">등록된 리뷰가 없습니다. 첫 리뷰를 남겨보세요!</div>';
-                return;
-            }
-            rest.reviews.forEach(rev => { reviewContainer.innerHTML += `<div class="review-box">${rev}</div>`; });
+        // 좋아요 실시간 반영
+        function increaseLike(id, btnElement) {
+            const idx = restaurants.findIndex(r => r.id === id);
+            restaurants[idx].likes++;
+            saveMasterDataSilent(); 
+            if (btnElement) btnElement.innerHTML = `❤️ 추천하기 ${restaurants[idx].likes}`;
+            renderUserList(); 
+        }
+
+        // 패널 리뷰 실시간 반영
+        function renderInfoReviews() {
+            const rest = restaurants.find(r => r.id === currentInfoRestId);
+            const container = document.getElementById('infoReviews'); container.innerHTML = '';
+            if(!rest || !rest.reviews || rest.reviews.length === 0) { container.innerHTML = '<div style="color:#999; font-size:13px;">작성된 한줄평이 없습니다.</div>'; return; }
+            rest.reviews.forEach(rev => { container.innerHTML += `<div class="review-box">${rev}</div>`; });
         }
 
         function addReview() {
-            const input = document.getElementById('newReviewInput').value.trim();
-            if(!input) return alert("리뷰 내용을 입력해주세요.");
-            const restIndex = restaurants.findIndex(r => r.id === currentModalRestId);
-            if(!restaurants[restIndex].reviews) restaurants[restIndex].reviews = [];
+            const input = document.getElementById('newReviewInput');
+            const text = input.value.trim();
+            if(!text) return alert("내용을 입력해주세요.");
+            const idx = restaurants.findIndex(r => r.id === currentInfoRestId);
+            if(idx === -1) return;
             
-            restaurants[restIndex].reviews.push(input);
-            saveMasterData();
-            renderReviews();
-            document.getElementById('newReviewInput').value = '';
+            if(!restaurants[idx].reviews) restaurants[idx].reviews = [];
+            restaurants[idx].reviews.push(text);
+            saveMasterDataSilent(); 
+            renderInfoReviews(); 
+            input.value = '';
         }
 
+        // --- 사용자 전체 식당 목록 ---
+        function renderUserList() {
+            const tbody = document.getElementById('user-list-tbody'); if(!tbody) return;
+            const sortedList = [...restaurants].filter(r => !r.isHidden).sort((a,b) => b.likes - a.likes);
+            if(sortedList.length === 0) { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:30px;">등록된 식당이 없습니다.</td></tr>`; return; }
+            
+            tbody.innerHTML = sortedList.map(r => `
+                <tr>
+                    <td><div class="item-title" style="cursor:pointer; color:var(--primary);" onclick="openFromList(${r.id})">${r.name}</div></td>
+                    <td>
+                        <div class="item-sub">${r.address || '-'} <button class="copy-btn" onclick="copyText('${r.address || ''}')">복사</button></div>
+                    </td>
+                    <td>
+                        <div style="margin-bottom:4px;">${r.tags.map(t => `<span class="tag-badge">${t}</span>`).join('')}</div>
+                        <span class="time-badge">${r.time || '정보 없음'}</span>
+                    </td>
+                    <td style="text-align: center;"><div class="like-btn" onclick="openSlidePanel(${r.id})">❤️ ${r.likes}</div></td>
+                </tr>
+            `).join('');
+        }
+        function openFromList(id) { switchTab('tab-home', document.querySelectorAll('.nav-item')[1]); selectRestaurant(id); }
+
+        // --- 우측 리뷰 전용 슬라이드 창 로직 (실시간 반영) ---
+        function openSlidePanel(id) {
+            const rest = restaurants.find(r => r.id === id); if(!rest) return;
+            slideRestId = id;
+            document.getElementById('slideTitle').innerText = `${rest.name}`;
+            
+            const slideLikeBtn = document.getElementById('slideLikeBtn');
+            slideLikeBtn.innerText = `❤️ 추천하기 ${rest.likes}`;
+            slideLikeBtn.onclick = function() { increaseLikeFromSlide(rest.id, slideLikeBtn); };
+            
+            renderSlideReviews();
+            document.getElementById('slideOverlay').classList.add('show');
+            setTimeout(() => { document.getElementById('slidePanel').classList.add('open'); }, 10);
+        }
+        function closeSlidePanel() {
+            document.getElementById('slidePanel').classList.remove('open');
+            setTimeout(() => { document.getElementById('slideOverlay').classList.remove('show'); }, 300);
+        }
+        function renderSlideReviews() {
+            const rest = restaurants.find(r => r.id === slideRestId);
+            const container = document.getElementById('slideReviews'); container.innerHTML = '';
+            if(!rest.reviews || rest.reviews.length === 0) { container.innerHTML = '<div style="color:#999; font-size:14px; text-align:center; padding:20px;">첫 리뷰를 남겨주세요!</div>'; return; }
+            rest.reviews.forEach(rev => { container.innerHTML += `<div class="review-box">${rev}</div>`; });
+        }
+        function addReviewFromSlide() {
+            const input = document.getElementById('slideNewReview');
+            const text = input.value.trim();
+            if(!text) return alert("내용을 입력해주세요.");
+            const idx = restaurants.findIndex(r => r.id === slideRestId);
+            if(idx === -1) return;
+            
+            if(!restaurants[idx].reviews) restaurants[idx].reviews = [];
+            restaurants[idx].reviews.push(text);
+            saveMasterDataSilent(); 
+            renderSlideReviews();
+            input.value = '';
+        }
+        function increaseLikeFromSlide(id, btnElement) {
+            const idx = restaurants.findIndex(r => r.id === id); 
+            restaurants[idx].likes++; 
+            saveMasterDataSilent();
+            if(btnElement) btnElement.innerText = `❤️ 추천하기 ${restaurants[idx].likes}`;
+            renderUserList();
+        }
+
+        // --- 식당 제보 ---
+        function submitSuggestion() {
+            const name = document.getElementById('suggestName').value.trim();
+            const addr = document.getElementById('suggestAddr').value.trim();
+            const time = document.getElementById('suggestTime').value.trim();
+            const tagsInput = document.getElementById('suggestTags').value.trim();
+            const photoInput = document.getElementById('suggestPhoto');
+            
+            if(!name || !addr || !photoInput.files[0]) return alert("식당명, 주소, 메뉴판 사진은 필수 사항입니다.");
+            const tagsArray = tagsInput.split(' ').filter(t => t.startsWith('#') && t.length > 1);
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                suggestions.push({ id: Date.now(), name, address: addr, time, tags: tagsArray, photo: e.target.result });
+                localStorage.setItem('sch_suggest_v13_2', JSON.stringify(suggestions)); 
+                updateAppView();
+                alert("제보가 완료되었습니다.");
+                ['suggestName', 'suggestAddr', 'suggestTime', 'suggestTags'].forEach(id => document.getElementById(id).value = '');
+                photoInput.value = '';
+            };
+            reader.readAsDataURL(photoInput.files[0]);
+        }
+
+        // --- 관리자 제어 로직 ---
         function checkAdminPassword() {
             if(document.getElementById('adminPassword').value === "1234") {
-                document.getElementById('admin-lock').style.display = 'none';
-                document.getElementById('admin-dashboard').style.display = 'block';
-            } else alert("비밀번호가 일치하지 않습니다.");
+                isAdmin = true;
+                document.getElementById('btnAdminLogin').style.display = 'none'; 
+                document.getElementById('adminMenuGroup').style.display = 'flex'; 
+                
+                const indicator = document.getElementById('modeIndicator');
+                indicator.innerHTML = '⚙️ 관리자 모드 <span style="font-size:10px;">(클릭 시 로그아웃)</span>'; 
+                indicator.style.background = '#FFF5F5'; indicator.style.color = '#FA5252';
+                
+                switchTab('tab-admin-manage', document.querySelectorAll('.admin-nav-item')[2]); // 목록 관리 탭으로 강제이동 검증
+                updateAppView();
+            } else alert("비밀번호가 틀렸습니다.");
         }
+
+        function renderAdminSuggestList() {
+            const tbody = document.getElementById('admin-suggest-tbody'); if(!tbody) return;
+            if(suggestions.length === 0) { tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; padding:25px; color:#999;">보관함이 비어있습니다.</td></tr>`; return; }
+            tbody.innerHTML = suggestions.map(s => {
+                const isDup = restaurants.some(r => r.name.includes(s.name) || s.name.includes(r.name));
+                return `
+                <tr>
+                    <td>
+                        <strong>${s.name}</strong> ${isDup ? '<span class="dup-warning">⚠️ 중복 의심</span>' : ''}
+                        <br><span style="font-size:13px; color:var(--text-muted);">${s.address}</span>
+                    </td>
+                    <td><div style="margin-bottom:6px;">${s.tags.map(t => `<span class="tag-badge" style="background:#FFEAA7;">${t}</span>`).join('')}</div></td>
+                    <td>
+                        <div style="display:flex; flex-direction:column; gap:6px;">
+                            <div style="display:flex; gap:4px;">
+                                <input type="text" id="approveLat_${s.id}" class="form-control" placeholder="위도" style="padding:6px; font-size:12px; height:30px;">
+                                <input type="text" id="approveLng_${s.id}" class="form-control" placeholder="경도" style="padding:6px; font-size:12px; height:30px;">
+                            </div>
+                            <div class="btn-group-equal">
+                                <button class="btn btn-success" onclick="approveSuggestion(${s.id})">승인</button>
+                                <button class="btn btn-danger" onclick="rejectSuggestion(${s.id})">반려</button>
+                            </div>
+                        </div>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        function approveSuggestion(id) {
+            const lat = parseFloat(document.getElementById(`approveLat_${id}`).value);
+            const lng = parseFloat(document.getElementById(`approveLng_${id}`).value);
+            if(isNaN(lat) || isNaN(lng)) return alert("승인을 위해 위도/경도를 입력해주세요.");
+            
+            const item = suggestions.find(s => s.id === id);
+            restaurants.push({ id: Date.now(), name: item.name, address: item.address, lat: lat, lng: lng, photo: item.photo, reviews: [], tags: item.tags.length > 0 ? item.tags : ["#신규제보"], likes: 0, isHidden: false, time: item.time || "정보 없음" });
+            suggestions = suggestions.filter(s => s.id !== id);
+            localStorage.setItem('sch_suggest_v13_2', JSON.stringify(suggestions)); 
+            saveMasterDataSilent(); 
+            updateAppView();
+            alert("승인되었습니다.");
+        }
+        function rejectSuggestion(id) { if(confirm("반려하시겠습니까?")) { suggestions = suggestions.filter(s => s.id !== id); localStorage.setItem('sch_suggest_v13_2', JSON.stringify(suggestions)); updateAppView(); } }
 
         function addRestaurant() {
-            const name = document.getElementById('restName').value;
+            const name = document.getElementById('restName').value.trim();
+            const addr = document.getElementById('restAddr').value.trim();
             const lat = parseFloat(document.getElementById('restLat').value);
             const lng = parseFloat(document.getElementById('restLng').value);
-            const photoInput = document.getElementById('restPhoto');
-
-            if (!name || isNaN(lat) || isNaN(lng)) return alert("식당명, 위도, 경도를 정확히 입력해주세요.");
-
-            let newRest = { id: Date.now(), name: name, lat: lat, lng: lng, photo: "", reviews: [] };
-
-            if (photoInput.files && photoInput.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    newRest.photo = e.target.result;
-                    saveAndRenderNewRest(newRest);
-                };
-                reader.readAsDataURL(photoInput.files[0]);
-            } else {
-                saveAndRenderNewRest(newRest);
-            }
-        }
-
-        function saveAndRenderNewRest(newRest) {
-            restaurants.push(newRest);
-            saveMasterData();
-            drawMarkers(restaurants);
-            alert(`[${newRest.name}] 등록이 완료되었습니다.`);
-            ['restName', 'restLat', 'restLng', 'restPhoto'].forEach(id => document.getElementById(id).value = '');
-        }
-
-        // --- 관리자 리스트 렌더링 및 인라인 편집 기능 ---
-        function renderAdminList() {
-            const tbody = document.getElementById('admin-rest-tbody');
-            if (!tbody) return;
+            const time = document.getElementById('restTime').value.trim();
+            const tagsInput = document.getElementById('restTags').value.trim();
+            const file = document.getElementById('restPhoto').files[0];
             
-            if (restaurants.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#999; padding:20px;">등록된 식당이 없습니다.</td></tr>`;
-                return;
-            }
+            if(!name || isNaN(lat) || isNaN(lng)) return alert("식당명, 위도, 경도는 필수입니다.");
+            const tagsArray = tagsInput.split(' ').filter(t => t.startsWith('#') && t.length > 1);
+            
+            let item = { id: Date.now(), name, address: addr, lat, lng, photo: "", reviews: [], tags: tagsArray, likes: 0, isHidden: false, time: time || "정보 없음" };
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = function(e) { item.photo = e.target.result; restaurants.push(item); saveMasterDataSilent(); updateAppView(); };
+                reader.readAsDataURL(file);
+            } else { restaurants.push(item); saveMasterDataSilent(); updateAppView(); }
+            ['restName', 'restAddr', 'restLat', 'restLng', 'restTime', 'restTags', 'restPhoto'].forEach(id => document.getElementById(id).value = '');
+            alert("공식 등록되었습니다.");
+        }
 
+        // 안정적인 관리자 표 출력 (UI 순서 보장)
+        function renderAdminList() {
+            const tbody = document.getElementById('admin-rest-tbody'); if(!tbody) return;
+            if(restaurants.length === 0) { tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; padding:30px;">데이터가 없습니다.</td></tr>`; return; }
+            
             tbody.innerHTML = restaurants.map(r => {
-                // 수정 모드인 경우 입력창(Input) 렌더링
                 if (editingRestId === r.id) {
                     return `
                         <tr style="background-color: #f1f8ff;">
                             <td>
-                                <input type="text" id="editName_${r.id}" class="edit-input" value="${r.name}" placeholder="식당명">
+                                <input type="text" id="editName_${r.id}" class="edit-input" value="${r.name}" placeholder="식당명" style="margin-bottom:5px;">
+                                <input type="text" id="editAddr_${r.id}" class="edit-input" value="${r.address}" placeholder="주소">
                             </td>
                             <td>
-                                <input type="text" id="editLat_${r.id}" class="edit-input" value="${r.lat}" placeholder="위도" style="margin-bottom:5px;">
-                                <input type="text" id="editLng_${r.id}" class="edit-input" value="${r.lng}" placeholder="경도">
+                                <div style="display:flex; gap:4px; margin-bottom:5px;">
+                                    <input type="text" id="editLat_${r.id}" class="edit-input" value="${r.lat}" placeholder="위도">
+                                    <input type="text" id="editLng_${r.id}" class="edit-input" value="${r.lng}" placeholder="경도">
+                                </div>
+                                <input type="file" id="editPhoto_${r.id}" accept="image/*" style="width:100%; padding:5px; box-sizing:border-box;">
+                                <div style="font-size:11px; color:#888; margin-top:2px;">* 사진 미선택 시 기존 유지</div>
                             </td>
-                            <td style="text-align: center;">
-                                <button class="btn btn-save" onclick="saveEdit(${r.id})">저장</button><br>
-                                <button class="btn btn-edit" onclick="cancelEdit()">취소</button>
+                            <td>
+                                <div class="btn-group-equal" style="margin-bottom:5px;">
+                                    <button class="btn btn-success" onclick="saveEdit(${r.id})">저장</button>
+                                    <button class="btn btn-edit" onclick="cancelEdit()">취소</button>
+                                </div>
                             </td>
-                        </tr>
-                    `;
-                } 
-                // 일반 모드인 경우 텍스트 렌더링
-                else {
+                        </tr>`;
+                } else {
                     return `
                         <tr>
-                            <td style="font-weight: 600; color: var(--primary);">${r.name}</td>
-                            <td style="font-size: 14px; color: var(--text-muted);">
-                                위도: ${r.lat}<br>경도: ${r.lng}
+                            <td>
+                                <strong style="color:var(--primary); font-size:15px;">${r.name}</strong>
+                                ${r.isHidden ? '<br><span style="color:#FA5252; font-size:12px; font-weight:700;">[숨김상태]</span>' : ''}
                             </td>
-                            <td style="text-align: center;">
-                                <button class="btn btn-edit" onclick="startEdit(${r.id})">수정</button><br>
-                                <button class="btn btn-danger" onclick="deleteRestaurant(${r.id})">삭제</button>
+                            <td style="font-size:13px; color:var(--text-muted);">
+                                ${r.address || '주소없음'}<br>좌표: ${r.lat} / ${r.lng}
                             </td>
-                        </tr>
-                    `;
+                            <td>
+                                <div class="btn-group-equal" style="margin-bottom:5px;">
+                                    <button class="btn btn-edit" onclick="startEdit(${r.id})">수정</button>
+                                    <button class="btn ${r.isHidden ? 'btn-success' : 'btn-edit'}" style="color:${r.isHidden ? '#2B8A3E' : ''}" onclick="toggleHide(${r.id})">${r.isHidden ? '노출' : '숨김'}</button>
+                                </div>
+                                <div class="btn-group-equal">
+                                    <button class="btn btn-danger" onclick="deleteRestaurant(${r.id})">삭제</button>
+                                    <button class="btn btn-outline" style="border:1px solid #ccc; color:#555;" onclick="openAdminReviewModal(${r.id})">리뷰 관리</button>
+                                </div>
+                            </td>
+                        </tr>`;
                 }
             }).join('');
         }
 
-        function startEdit(id) {
-            editingRestId = id;
-            renderAdminList();
-        }
-
-        function cancelEdit() {
-            editingRestId = null;
-            renderAdminList();
-        }
-
+        function toggleHide(id) { const idx = restaurants.findIndex(r => r.id === id); restaurants[idx].isHidden = !restaurants[idx].isHidden; saveMasterDataSilent(); updateAppView(); }
+        function startEdit(id) { editingRestId = id; renderAdminList(); }
+        function cancelEdit() { editingRestId = null; renderAdminList(); }
+        
         function saveEdit(id) {
-            const nameInput = document.getElementById(`editName_${id}`).value.trim();
-            const latInput = parseFloat(document.getElementById(`editLat_${id}`).value);
-            const lngInput = parseFloat(document.getElementById(`editLng_${id}`).value);
+            const name = document.getElementById(`editName_${id}`).value.trim();
+            const addr = document.getElementById(`editAddr_${id}`).value.trim();
+            const lat = parseFloat(document.getElementById(`editLat_${id}`).value);
+            const lng = parseFloat(document.getElementById(`editLng_${id}`).value);
+            const photoInput = document.getElementById(`editPhoto_${id}`);
+            
+            if(!name || isNaN(lat) || isNaN(lng)) return alert("식당명과 좌표는 필수입니다.");
+            const idx = restaurants.findIndex(r => r.id === id);
+            restaurants[idx].name = name; restaurants[idx].address = addr; restaurants[idx].lat = lat; restaurants[idx].lng = lng;
+            
+            if (photoInput.files && photoInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) { restaurants[idx].photo = e.target.result; finishSaveEdit(); };
+                reader.readAsDataURL(photoInput.files[0]);
+            } else { finishSaveEdit(); }
+        }
+        function finishSaveEdit() { editingRestId = null; saveMasterDataSilent(); updateAppView(); }
+        function deleteRestaurant(id) { if(confirm("영구 삭제하시겠습니까?")) { restaurants = restaurants.filter(r => r.id !== id); saveMasterDataSilent(); updateAppView(); } }
 
-            if (!nameInput || isNaN(latInput) || isNaN(lngInput)) {
-                alert("식당명과 올바른 숫자 형태의 위도/경도를 입력해주세요.");
-                return;
+        // --- 관리자 리뷰 삭제 모달 ---
+        function openAdminReviewModal(id) {
+            adminReviewRestId = id;
+            const rest = restaurants.find(r => r.id === id);
+            const listDiv = document.getElementById('adminReviewList'); listDiv.innerHTML = '';
+            
+            if(!rest.reviews || rest.reviews.length === 0) { listDiv.innerHTML = '<div style="text-align:center; color:#999; padding:20px;">작성된 리뷰가 없습니다.</div>'; } 
+            else {
+                rest.reviews.forEach((rev, idx) => {
+                    listDiv.innerHTML += `
+                        <div class="review-box" style="display:flex; justify-content:space-between; align-items:center;">
+                            <div style="flex:1; padding-right:10px; font-size:13px;">${rev}</div>
+                            <button class="btn btn-danger" style="padding:4px 8px; font-size:12px; flex-shrink:0;" onclick="deleteReviewAdmin(${id}, ${idx})">삭제</button>
+                        </div>`;
+                });
             }
-
-            // 해당 ID의 식당 데이터 업데이트
-            const restIndex = restaurants.findIndex(r => r.id === id);
-            if (restIndex !== -1) {
-                restaurants[restIndex].name = nameInput;
-                restaurants[restIndex].lat = latInput;
-                restaurants[restIndex].lng = lngInput;
-                
-                editingRestId = null; // 수정 모드 종료
-                saveMasterData(); // 로컬스토리지 저장 및 표 재렌더링
-                drawMarkers(restaurants); // 수정된 위치로 지도 마커 즉시 업데이트
-                alert("정보가 성공적으로 수정되었습니다.");
+            document.getElementById('adminReviewModal').style.display = 'flex';
+        }
+        function closeAdminReviewModal() { document.getElementById('adminReviewModal').style.display = 'none'; }
+        function deleteReviewAdmin(restId, reviewIdx) {
+            if(confirm("이 리뷰를 삭제하시겠습니까?")) {
+                const idx = restaurants.findIndex(r => r.id === restId);
+                restaurants[idx].reviews.splice(reviewIdx, 1);
+                saveMasterDataSilent(); openAdminReviewModal(restId);
             }
         }
 
-        function deleteRestaurant(id) {
-            if (confirm("정말 이 식당을 목록에서 삭제하시겠습니까?")) {
-                restaurants = restaurants.filter(r => r.id !== id);
-                saveMasterData(); 
-                drawMarkers(restaurants); 
-                alert("삭제되었습니다.");
-            }
-        }
-
-        function submitSuggestion() {
-            alert("제보가 완료되었습니다.");
-            ['suggestName', 'suggestComment'].forEach(id => document.getElementById(id).value = '');
+        // --- 엑셀 백업 ---
+        function downloadCSV() {
+            let csv = '\uFEFF'; 
+            csv += "식당명,주소,위도,경도,태그,추천수\n";
+            restaurants.forEach(r => {
+                const safeName = r.name.replace(/,/g, ' ');
+                const safeAddr = (r.address || '').replace(/,/g, ' ');
+                const tags = r.tags.join(' ');
+                csv += `${safeName},${safeAddr},${r.lat},${r.lng},${tags},${r.likes}\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `SCH맛집_백업_${new Date().toISOString().substring(0,10)}.csv`;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
     </script>
 </body>
