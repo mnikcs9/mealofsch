@@ -9,7 +9,7 @@
         :root {
             --primary: #0055A5; --bg-color: #F4F6F8; --sidebar-bg: #FFFFFF; --card-bg: #FFFFFF;
             --text-main: #212529; --text-muted: #6C757D; --border-color: #E5E8EB; --sidebar-width: 250px;
-            --cafe-color: #8D6E63; /* 카페 전용 브라운 컬러 */
+            --cafe-color: #8D6E63; --partner-color: #673AB7;
         }
         
         body { font-family: 'Pretendard', sans-serif; background-color: var(--bg-color); margin: 0; color: var(--text-main); overflow: hidden; display: flex; height: 100vh; }
@@ -25,14 +25,12 @@
         .nav-item.active { background-color: #EBF3FC; color: var(--primary); font-weight: 700; }
         .badge { background-color: #FA5252; color: white; font-size: 11px; padding: 3px 7px; border-radius: 10px; font-weight: 700; }
 
-        /* 듀얼 룰렛 버튼 */
         .action-btn-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
         .btn-roulette { font-size: 15px; font-weight: 700; color: white; padding: 12px 15px; border-radius: 12px; cursor: pointer; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: 0.2s; }
-        .btn-roulette:hover { transform: translateY(-1px); }
+        .btn-roulette:hover { filter: brightness(1.1); }
         .btn-rest { background-color: var(--primary); }
         .btn-cafe { background-color: var(--cafe-color); }
 
-        /* 관리자 메뉴 */
         .admin-menu-group { display: none; flex-direction: column; gap: 8px; margin-top: 10px; border-top: 1px dashed var(--border-color); padding-top: 10px; }
         .admin-nav-item { color: #D35400; }
         .admin-nav-item:hover { background-color: #FDEDEC; color: #C0392B; }
@@ -42,7 +40,12 @@
         .main-wrapper { flex: 1; display: flex; flex-direction: column; height: 100vh; position: relative; width: 100%; min-width: 0; }
         .topbar { background-color: var(--card-bg); height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; border-bottom: 1px solid var(--border-color); z-index: 50; flex-shrink: 0; }
         .btn-toggle { font-size: 16px; background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 5px 10px; transition: 0.2s; }
-        .mode-indicator { background: #E9ECEF; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 700; color: #495057; cursor: pointer; transition: 0.2s; }
+        .btn-toggle:hover { color: var(--text-main); }
+        
+        .mode-indicator { position: relative; background: #E9ECEF; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 700; color: #495057; cursor: pointer; transition: 0.2s; user-select: none; }
+        .dropdown-menu { display: none; position: absolute; top: 45px; right: 0; background: #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-radius: 8px; border: 1px solid var(--border-color); width: 120px; z-index: 1000; overflow: hidden; }
+        .dropdown-item { padding: 12px; font-size: 13px; font-weight: 600; color: #FA5252; text-align: center; transition: 0.2s; }
+        .dropdown-item:hover { background: #FFF5F5; }
 
         .content-container { padding: 25px; flex: 1; overflow-y: auto; box-sizing: border-box; -webkit-overflow-scrolling: touch; }
         .tab-content { display: none; animation: fadeIn 0.25s ease; max-width: 1200px; margin: 0 auto; height: 100%; }
@@ -61,17 +64,24 @@
         .btn-close-info { cursor: pointer; font-size: 24px; color: #999; border: none; background: none; line-height: 1; display: none; }
         .info-body { padding: 20px; overflow-y: auto; flex: 1; }
         
-        /* 지도 내 커스텀 마커 UI */
-        .custom-marker { padding: 6px 10px; border-radius: 20px; font-size: 13px; font-weight: 700; color: white; border: 2px solid white; box-shadow: 0 3px 6px rgba(0,0,0,0.2); white-space: nowrap; cursor: pointer; }
-        .marker-rest { background-color: var(--primary); }
-        .marker-cafe { background-color: var(--cafe-color); }
+        /* 📍 스마트 마커 UI (중첩 해결) */
+        .custom-marker { background: white; border: 2px solid; padding: 6px 8px; border-radius: 20px; font-size: 13px; font-weight: 700; color: #333; box-shadow: 0 3px 6px rgba(0,0,0,0.15); white-space: nowrap; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 4px; z-index: 10; }
+        .custom-marker .text { display: none; } /* 기본적으론 글자 숨김 (아이콘만 표시) */
+        .custom-marker:hover, .custom-marker.active { z-index: 1000 !important; padding: 6px 12px; transform: scale(1.05); }
+        .custom-marker:hover .text, .custom-marker.active .text { display: inline; } /* 마우스 올리면 글자 노출 */
+        
+        .marker-rest { border-color: var(--primary); }
+        .marker-cafe { border-color: var(--cafe-color); }
+        .marker-uni { background: #2C3E50; color: white; border-color: #F1C40F; z-index: 5; pointer-events: none; }
+        .marker-uni .text { display: inline; font-weight: 800; }
+        
         .marker-bounce { animation: bounce 0.4s infinite alternate; box-shadow: 0 8px 15px rgba(0,0,0,0.3); z-index: 1000 !important; }
         @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-12px); } }
 
-        /* 주변 카페 추천 카드 */
-        .nearby-cafe-box { display: flex; gap: 10px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
-        .nearby-card { flex: 1; min-width: 140px; border: 1px solid #E5E8EB; border-radius: 10px; padding: 12px; cursor: pointer; background: #fff; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
-        .nearby-card:hover { border-color: var(--cafe-color); box-shadow: 0 4px 10px rgba(141,110,99,0.1); }
+        /* 교차 추천 카드 (식당<->카페) */
+        .nearby-box { display: flex; gap: 10px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
+        .nearby-card { flex: 1; min-width: 150px; border: 1px solid #E5E8EB; border-radius: 10px; padding: 12px; cursor: pointer; background: #fff; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .nearby-card:hover { border-color: var(--primary); box-shadow: 0 4px 10px rgba(0,85,165,0.1); }
         .nearby-title { font-weight: 700; font-size: 14px; color: var(--text-main); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .nearby-dist { font-size: 12px; color: var(--text-muted); }
 
@@ -79,15 +89,19 @@
         .search-input { width: 100%; padding: 15px 20px; font-size: 16px; border: none; border-radius: 12px; box-sizing: border-box; outline: none; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         .search-results { position: absolute; top: 55px; left: 0; width: 100%; background: #fff; border-radius: 12px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); display: none; max-height: 250px; overflow-y: auto; }
         .search-item { padding: 12px 20px; font-size: 15px; cursor: pointer; border-bottom: 1px solid #f1f3f5; }
+        .search-item:hover { background-color: #f8f9fa; color: var(--primary); }
         
         .chip-container { display: flex; gap: 6px; position: absolute; top: 75px; left: 15px; z-index: 10; flex-wrap: wrap; }
-        .chip { background: #FFFFFF; border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; color: #495057; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.05);}
+        .chip { background: #FFFFFF; border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; color: #495057; cursor: pointer; transition: 0.15s; box-shadow: 0 2px 5px rgba(0,0,0,0.05);}
+        .chip:hover { border-color: var(--primary); color: var(--primary); background: #EBF3FC; }
+        
         #map { width: 100%; flex: 1; border-radius: 16px; border: 1px solid var(--border-color); }
 
-        /* 폼 요소 및 뱃지 */
+        /* 공통 폼 UI */
         .card { background: var(--card-bg); border-radius: 16px; padding: 25px; margin-bottom: 24px; border: 1px solid var(--border-color); }
+        .card-title { font-size: 20px; font-weight: 700; margin-top: 0; margin-bottom: 20px; color: var(--text-main); }
         .form-group { display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px; }
-        .form-control { padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px; width: 100%; box-sizing:border-box;}
+        .form-control { padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px; box-sizing: border-box; width: 100%; }
         
         .radio-group { display: flex; gap: 15px; padding: 10px 0; }
         .radio-label { display: flex; align-items: center; gap: 5px; font-size: 15px; font-weight: 600; cursor: pointer; }
@@ -95,16 +109,25 @@
         .type-badge { padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 700; color: white; display: inline-block; }
         .bg-rest { background-color: var(--primary); }
         .bg-cafe { background-color: var(--cafe-color); }
+        .bg-partner { background-color: var(--partner-color); }
+        
         .tag-badge { background: #F1F3F5; color: #495057; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; margin-right: 4px; display: inline-block; margin-bottom: 4px;}
         
         .btn { padding: 10px 16px; font-size: 14px; font-weight: 600; border: none; border-radius: 8px; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 5px; }
         .btn-primary { background-color: var(--primary); color: white; }
         .btn-outline { background-color: #fff; color: var(--primary); border: 1px solid var(--primary); }
+        
         .btn-group-equal { display: flex; gap: 8px; width: 100%; }
         .btn-group-equal .btn { flex: 1; }
         .btn-edit { background-color: #E9ECEF; color: #495057; }
         .btn-danger { background-color: #FFF5F5; color: #FA5252; border: 1px solid #FFE3E3; }
         .btn-success { background-color: #EBFBEE; color: #2B8A3E; border: 1px solid #D3F9D8; }
+
+        /* 리뷰 전용 UI 개편 */
+        .review-list-container { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; padding-right: 5px; }
+        .review-box { background: var(--bg-color); padding: 14px; border-radius: 10px; font-size: 14px; border: 1px solid #E5E8EB; }
+        .review-meta { font-size: 11px; color: #888; margin-bottom: 6px; display: block; font-weight: 600; }
+        .review-text { color: #333; line-height: 1.4; }
 
         input[type="file"] { background-color: #f8f9fa; padding: 10px; border-radius: 8px; border: 1px dashed #ccc; font-size:13px; }
 
@@ -112,7 +135,7 @@
         .table-responsive { width: 100%; overflow-x: auto; }
         .toss-list { width: 100%; border-collapse: collapse; min-width: 700px; }
         .toss-list th { text-align: left; padding: 15px 10px; background-color: #f8f9fa; border-bottom: 2px solid var(--border-color); color: #495057; font-size: 14px; }
-        .toss-list td { padding: 15px 10px; border-bottom: 1px solid #F2F4F6; vertical-align: middle; }
+        .toss-list td { padding: 15px 10px; border-bottom: 1px solid #F2F4F6; vertical-align: middle; font-size: 15px;}
         
         .like-btn { font-weight: 700; font-size: 14px; color: #FA5252; cursor: pointer; border: 1px solid #FFE3E3; background: #FFF5F5; padding: 6px 12px; border-radius: 20px; display: inline-block; transition: 0.1s;}
         
@@ -124,21 +147,19 @@
         .slide-panel.open { right: 0; }
         
         .modal-content { background: #fff; width: 90%; max-width: 450px; border-radius: 20px; padding: 30px; position: relative; max-height: 85vh; overflow-y: auto; }
-        
         .photo-container img { width: 100%; border-radius: 12px; border: 1px solid #eee; margin-top: 5px; object-fit: contain; max-height: 250px; background-color: #f8f9fa; }
         .empty-photo { background: #f8f9fa; color: #adb5bd; padding: 30px 0; text-align: center; border-radius: 12px; font-size: 13px; border: 1px dashed #ced4da; }
-        .review-box { background: var(--bg-color); padding: 12px; border-radius: 8px; margin-bottom: 8px; font-size: 14px; display: flex; justify-content: space-between; align-items: flex-start; }
 
         @media (max-width: 768px) {
             .sidebar { position: absolute; height: 100vh; box-shadow: 5px 0 15px rgba(0,0,0,0.1); }
             .split-layout { flex-direction: column; }
-            .info-section { display: none; position: absolute; bottom: 0; left: 0; width: 100%; height: 55%; border-radius: 20px 20px 0 0; z-index: 20; box-shadow: 0 -5px 20px rgba(0,0,0,0.15); min-width: 0; }
+            .info-section { display: none; position: absolute; bottom: 0; left: 0; width: 100%; height: 60%; border-radius: 20px 20px 0 0; z-index: 20; box-shadow: 0 -5px 20px rgba(0,0,0,0.15); min-width: 0; }
             .info-section.mobile-open { display: flex; }
             .btn-close-info { display: block; }
             #infoPlaceholder { display: none !important; }
         }
     </style>
-    <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=mlxyqndqs3"></script>
+    <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=여기에_본인의_키값_입력"></script>
 </head>
 <body>
 
@@ -150,9 +171,9 @@
                 <div class="btn-roulette btn-cafe" onclick="triggerRandomPick('cafe')">☕ 커피 어디가지?</div>
             </div>
             
-            <div class="nav-item active" onclick="switchTab('tab-home', this)">📍 검색</div>
+            <div class="nav-item active" onclick="switchTab('tab-home', this)">📍 지도 검색</div>
             <div class="nav-item" onclick="switchTab('tab-list', this)">📋 전체 목록</div>
-            <div class="nav-item" onclick="switchTab('tab-suggest', this)">✍️ 식당/카페 제보</div>
+            <div class="nav-item" onclick="switchTab('tab-suggest', this)">✍️ 장소 제보</div>
             <div style="flex: 1;"></div>
             
             <div class="nav-item" id="btnAdminLogin" onclick="switchTab('tab-admin-login', this)">⚙️ 관리자 로그인</div>
@@ -167,7 +188,12 @@
     <div class="main-wrapper">
         <header class="topbar">
             <button class="btn-toggle" id="toggleBtn" onclick="toggleSidebar()">❮❮</button>
-            <div class="mode-indicator" id="modeIndicator" onclick="toggleAdminMode()" title="클릭 시 로그아웃">👤 사용자 모드</div>
+            <div class="mode-indicator" id="modeIndicator" onclick="toggleAdminDropdown()">
+                👤 사용자 모드 ▼
+                <div id="adminDropdown" class="dropdown-menu">
+                    <div class="dropdown-item" onclick="logoutAdmin(event)">로그아웃</div>
+                </div>
+            </div>
         </header>
 
         <div class="content-container">
@@ -182,7 +208,7 @@
                             <span class="chip" onclick="quickFilter('식당')">🍽️ 식당만</span>
                             <span class="chip" onclick="quickFilter('카페')">☕ 카페만</span>
                             <span class="chip" onclick="quickFilter('#국물')">#국물</span>
-                            <span class="chip" onclick="quickFilter('#가성비')">#가성비</span>
+                            <span class="chip" onclick="quickFilter('#제휴')">🤝 제휴업체</span>
                         </div>
                         <div id="map"></div>
                     </div>
@@ -190,7 +216,7 @@
                     <div class="info-section" id="infoPanel">
                         <div id="infoPlaceholder">
                             <div style="font-size: 40px; margin-bottom: 15px;">👈</div>
-                            지도에서 식당이나 카페를 선택해주세요.
+                            지도에서 마커를 선택해주세요.<br><span style="font-size:12px; margin-top:10px;">(마커에 마우스를 올리면 이름이 나타납니다.)</span>
                         </div>
                         
                         <div id="infoContent">
@@ -201,19 +227,19 @@
                             <div class="info-body">
                                 <div class="btn-group-equal" style="margin-bottom: 15px;">
                                     <button class="btn btn-edit" id="infoLikeBtn" style="background:#FFF5F5; color:#FA5252; font-weight:700;">❤️ 추천하기</button>
-                                    <button class="btn btn-outline" onclick="copyShareInfo()">🔗 주소 복사</button>
+                                    <button class="btn btn-outline" onclick="copyShareInfo()">🔗 정보 복사</button>
                                 </div>
-                                <div id="infoMetaArea" style="margin-bottom:15px; font-size:14px; color:var(--text-muted); line-height: 1.6;"></div>
+                                <div id="infoMetaArea" style="margin-bottom:15px; font-size:16px; color:var(--text-main); line-height: 1.6;"></div>
                                 
-                                <div id="nearbyCafeArea"></div>
+                                <div id="nearbyCrossArea"></div>
                                 
-                                <div style="font-size: 15px; font-weight: 700; margin: 15px 0 5px;">📋 메뉴 및 매장 사진</div>
+                                <div style="font-size: 15px; font-weight: 700; margin: 15px 0 5px;">📋 메뉴 및 사진</div>
                                 <div class="photo-container" id="infoMenuPhoto"></div>
                                 
                                 <div style="font-size: 15px; font-weight: 700; margin: 25px 0 10px;">💬 교직원 리뷰</div>
-                                <div id="infoReviews"></div>
+                                <div class="review-list-container" id="infoReviews"></div>
                                 
-                                <div style="display: flex; gap: 8px; margin-top: 15px;">
+                                <div style="display: flex; gap: 8px; flex-shrink:0;">
                                     <input type="text" id="newReviewInput" class="form-control" placeholder="한 줄 평 남기기" style="padding: 10px;" onkeypress="if(event.keyCode===13) addReview()">
                                     <button class="btn btn-primary" style="padding: 10px 15px; white-space: nowrap;" onclick="addReview()">등록</button>
                                 </div>
@@ -228,7 +254,7 @@
                     <h2 class="card-title">교직원 연동 장소 목록</h2>
                     <div class="table-responsive">
                         <table class="toss-list">
-                            <thead><tr><th style="width: 25%;">이름</th><th style="width: 40%;">주소</th><th style="width: 20%;">태그</th><th style="width: 15%; text-align: center;">리뷰/추천</th></tr></thead>
+                            <thead><tr><th style="width: 30%;">이름</th><th style="width: 35%;">주소</th><th style="width: 20%;">태그</th><th style="width: 15%; text-align: center;">리뷰/추천</th></tr></thead>
                             <tbody id="user-list-tbody"></tbody>
                         </table>
                     </div>
@@ -245,9 +271,9 @@
                         </div>
                         <input type="text" id="suggestName" class="form-control" placeholder="장소명 (필수)">
                         <input type="text" id="suggestAddr" class="form-control" placeholder="지번/도로명 주소 (필수)">
-                        <input type="text" id="suggestTime" class="form-control" placeholder="이동 소요 시간 (예: 차량 10분)">
-                        <input type="text" id="suggestTags" class="form-control" placeholder="해시태그 자율 입력 (예: #가성비 - 띄어쓰기로 구분)">
-                        <label style="font-weight: 600; font-size: 14px;">📋 메뉴/매장 사진 첨부 (필수)</label>
+                        <input type="text" id="suggestTime" class="form-control" placeholder="소요 시간 (예: 차량 10분)">
+                        <input type="text" id="suggestTags" class="form-control" placeholder="해시태그 자율 입력 (예: #가성비 - 띄어쓰기 구분)">
+                        <label style="font-weight: 600; font-size: 14px;">📋 메뉴/사진 첨부 (필수)</label>
                         <input type="file" id="suggestPhoto" class="form-control" accept="image/*">
                         <button class="btn btn-primary" style="padding: 14px; margin-top: 10px;" onclick="submitSuggestion()">제보서 발송하기 🚀</button>
                     </div>
@@ -269,7 +295,7 @@
                     <h2 class="card-title" style="color: #D39E00;">📥 건의 제보함</h2>
                     <div class="table-responsive">
                         <table class="toss-list">
-                            <thead><tr><th>장소정보 / 주소</th><th>분류/태그 및 사진</th><th style="text-align: center; width: 160px;">처리</th></tr></thead>
+                            <thead><tr><th>장소정보 / 주소</th><th>분류 및 사진</th><th style="text-align: center; width: 140px;">처리</th></tr></thead>
                             <tbody id="admin-suggest-tbody"></tbody>
                         </table>
                     </div>
@@ -283,7 +309,11 @@
                         <div class="radio-group">
                             <label class="radio-label"><input type="radio" name="restType" value="restaurant" checked> 🍽️ 식당</label>
                             <label class="radio-label"><input type="radio" name="restType" value="cafe"> ☕ 카페</label>
+                            <span style="color:#ddd;">|</span>
+                            <label class="radio-label" style="color:var(--partner-color);"><input type="checkbox" id="restPartner" onchange="togglePartnerInput('add')"> 🤝 순천향대 협약</label>
                         </div>
+                        <input type="text" id="restPartnerBenefit" class="form-control" placeholder="제휴 혜택 기입 (예: 전 메뉴 10% 할인)" style="display:none; border-color:var(--partner-color);">
+                        
                         <input type="text" id="restName" class="form-control" placeholder="장소명">
                         <input type="text" id="restAddr" class="form-control" placeholder="주소">
                         <div style="display: flex; gap: 10px;">
@@ -291,7 +321,8 @@
                             <input type="text" id="restLng" class="form-control" placeholder="경도 (Lng)">
                         </div>
                         <input type="text" id="restTime" class="form-control" placeholder="소요 시간">
-                        <input type="text" id="restTags" class="form-control" placeholder="해시태그 (예: #국물)">
+                        <input type="text" id="restTags" class="form-control" placeholder="해시태그">
+                        <label style="font-size: 13px; color:#555;">📋 사진 첨부 (자동 압축)</label>
                         <input type="file" id="restPhoto" class="form-control" accept="image/*">
                         <button class="btn btn-primary" style="padding: 14px;" onclick="addRestaurant()">등록 완료</button>
                     </div>
@@ -302,11 +333,11 @@
                 <div class="card">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                         <h2 class="card-title" style="margin:0;">전체 목록 관리</h2>
-                        <button class="btn btn-success" style="padding: 8px 12px; font-size: 13px;" onclick="downloadCSV()">📥 엑셀 백업</button>
+                        <button class="btn btn-success" style="padding: 6px 10px; font-size: 12px;" onclick="downloadCSV()">📥 엑셀 백업</button>
                     </div>
                     <div class="table-responsive">
                         <table class="toss-list">
-                            <thead><tr><th style="width: 25%;">장소명(유형)</th><th style="width: 45%;">주소 및 좌표</th><th style="width: 30%; text-align: center;">제어</th></tr></thead>
+                            <thead><tr><th style="width: 25%;">장소명</th><th style="width: 55%;">주소 및 좌표</th><th style="width: 20%; text-align: center;">제어</th></tr></thead>
                             <tbody id="admin-rest-tbody"></tbody>
                         </table>
                     </div>
@@ -327,15 +358,15 @@
                 <button class="btn-like-big" id="slideLikeBtn" style="width: 100%; border: 1px solid #FFE3E3; background: #FFF5F5; padding: 12px; border-radius: 12px; font-weight: 700; color: #FA5252; cursor: pointer;">❤️ 추천하기</button>
             </div>
             
-            <div id="slideNearbyCafeArea"></div>
+            <div id="slideNearbyCrossArea"></div>
             
             <div style="font-size: 15px; font-weight: 700; margin: 0 0 10px;">📋 메뉴 및 사진</div>
             <div class="photo-container" id="slideMenuPhoto" style="margin-bottom: 25px;"></div>
             
             <div style="font-size: 15px; font-weight: 700; margin: 0 0 10px;">💬 교직원 리뷰</div>
-            <div style="flex: 1; overflow-y: auto;" id="slideReviews"></div>
+            <div class="review-list-container" id="slideReviews"></div>
             
-            <div style="display: flex; gap: 8px; margin-top: 15px; flex-shrink: 0;">
+            <div style="display: flex; gap: 8px; flex-shrink: 0;">
                 <input type="text" id="slideNewReview" class="form-control" placeholder="한 줄 평 남기기" style="padding: 10px;" onkeypress="if(event.keyCode===13) addReviewFromSlide()">
                 <button class="btn btn-primary" style="white-space:nowrap;" onclick="addReviewFromSlide()">등록</button>
             </div>
@@ -345,19 +376,19 @@
     <div class="modal-overlay" id="adminReviewModal">
         <div class="modal-content">
             <div class="info-header" style="padding: 0 0 15px 0; margin-bottom: 15px; border-bottom: 1px solid #eee;">
-                <h2 class="info-title" style="font-size:20px;">리뷰 관리</h2>
+                <h2 class="info-title" style="font-size:20px;">리뷰 개별 관리</h2>
                 <button class="btn-close-info" onclick="closeAdminReviewModal()" style="display:block; position:absolute; top:25px; right:25px;">×</button>
             </div>
-            <div id="adminReviewList" style="max-height: 400px; overflow-y: auto;"></div>
+            <div id="adminReviewList" class="review-list-container" style="max-height: 400px;"></div>
         </div>
     </div>
 
     <script>
-        // 마스터 데이터 포맷 변경: type ('restaurant' | 'cafe') 속성 추가
+        // 마스터 데이터 포맷 (리뷰 객체화, 협약업체 속성 추가)
         const defaultRestaurants = [
-            { id: 1, type: "restaurant", name: "탕정집쭈꾸미 신정호수직영점", address: "충남 아산시 신정호길 33-1", lat: 36.7761, lng: 126.9822, photo: "", reviews: ["주차가 편하고 매콤해요."], tags: ["#매콤", "#신정호"], likes: 12, isHidden: false, time: "차량 8분" },
-            { id: 2, type: "restaurant", name: "아산가야밀면", address: "충남 아산시 시민로 429", lat: 36.7718, lng: 126.9745, photo: "", reviews: ["여름 필수 코스."], tags: ["#면요리", "#가성비"], likes: 25, isHidden: false, time: "차량 10분" },
-            { id: 3, type: "cafe", name: "투썸플레이스 아산신정호점", address: "충남 아산시 신정호길 33", lat: 36.7755, lng: 126.9810, photo: "", reviews: ["뷰가 좋아요.", "식사하고 바로 가기 편해요."], tags: ["#뷰맛집", "#신정호"], likes: 45, isHidden: false, time: "도보 1분" }
+            { id: 1, type: "restaurant", name: "탕정집쭈꾸미 신정호수직영점", address: "충남 아산시 신정호길 33-1", lat: 36.7761, lng: 126.9822, photo: "", reviews: [{text: "주차가 편하고 매콤해요.", date: "2026-05-30"}], tags: ["#매콤", "#신정호"], likes: 12, isHidden: false, time: "차량 8분", isPartner: true, partnerBenefit: "음료수 1병 무료" },
+            { id: 2, type: "restaurant", name: "아산가야밀면", address: "충남 아산시 시민로 429", lat: 36.7718, lng: 126.9745, photo: "", reviews: [{text: "여름 필수 코스입니다.", date: "2026-05-31"}], tags: ["#면요리", "#가성비"], likes: 25, isHidden: false, time: "차량 10분", isPartner: false, partnerBenefit: "" },
+            { id: 3, type: "cafe", name: "투썸플레이스 아산신정호점", address: "충남 아산시 신정호길 33", lat: 36.7755, lng: 126.9810, photo: "", reviews: [], tags: ["#뷰맛집"], likes: 45, isHidden: false, time: "도보 1분", isPartner: true, partnerBenefit: "아메리카노 10% 할인" }
         ];
 
         let restaurants = [], suggestions = [], map, markers = [];
@@ -368,6 +399,13 @@
             const savedData = localStorage.getItem('sch_master_v14');
             if (savedData) restaurants = JSON.parse(savedData);
             else { restaurants = defaultRestaurants; saveMasterDataSilent(); }
+
+            // 리뷰 문자열을 객체로 자동 호환 마이그레이션 (구버전 데이터 보호)
+            restaurants.forEach(r => {
+                if(r.reviews && r.reviews.length > 0 && typeof r.reviews[0] === 'string') {
+                    r.reviews = r.reviews.map(text => ({ text: text, date: "2026-05-31" }));
+                }
+            });
 
             const savedSuggest = localStorage.getItem('sch_suggest_v14');
             if (savedSuggest) suggestions = JSON.parse(savedSuggest);
@@ -389,35 +427,27 @@
             try {
                 const activeList = restaurants.filter(r => !r.isHidden);
                 drawMarkers(activeList);
-            } catch(e) { console.warn("지도 API 대기중..."); }
+            } catch(e) {}
         }
 
-        // --- Haversine 거리 계산 (km 반환) ---
+        // 거리 계산 (Haversine)
         function getDistance(lat1, lon1, lat2, lon2) {
-            const R = 6371; 
-            const dLat = (lat2-lat1) * Math.PI / 180;
-            const dLon = (lon2-lon1) * Math.PI / 180;
+            const R = 6371; const dLat = (lat2-lat1) * Math.PI / 180; const dLon = (lon2-lon1) * Math.PI / 180;
             const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-            return R * c; 
+            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
         }
 
-        // 이미지 압축
         function compressImage(file, callback) {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
+            const reader = new FileReader(); reader.readAsDataURL(file);
             reader.onload = function(event) {
-                const img = new Image();
-                img.src = event.target.result;
+                const img = new Image(); img.src = event.target.result;
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
-                    const MAX_W = 800; const MAX_H = 800;
-                    let width = img.width; let height = img.height;
-                    if (width > height) { if (width > MAX_W) { height *= MAX_W / width; width = MAX_W; } } 
-                    else { if (height > MAX_H) { width *= MAX_H / height; height = MAX_H; } }
+                    let width = img.width, height = img.height;
+                    if (width > height) { if (width > 800) { height *= 800 / width; width = 800; } } 
+                    else { if (height > 800) { width *= 800 / height; height = 800; } }
                     canvas.width = width; canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
+                    canvas.getContext('2d').drawImage(img, 0, 0, width, height);
                     callback(canvas.toDataURL('image/jpeg', 0.7));
                 }
             }
@@ -430,7 +460,7 @@
             });
         }
 
-        // 네비게이션
+        // --- 네비게이션 제어 ---
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar'); const toggleBtn = document.getElementById('toggleBtn');
             sidebar.classList.toggle('collapsed');
@@ -451,36 +481,49 @@
             try { map.morph(new naver.maps.LatLng(36.7696, 126.9314), 15); } catch(e){}
             closeInfoPanel(); updateAppView();
         }
-        function toggleAdminMode() {
-            if(isAdmin) {
-                if(confirm("사용자 모드로 돌아가시겠습니까?")) {
-                    isAdmin = false;
-                    document.getElementById('btnAdminLogin').style.display = 'flex'; document.getElementById('adminMenuGroup').style.display = 'none'; 
-                    const indicator = document.getElementById('modeIndicator');
-                    indicator.innerHTML = '👤 사용자 모드'; indicator.style.background = '#E9ECEF'; indicator.style.color = '#495057';
-                    goToHome();
-                }
-            }
+
+        // 관리자 로그아웃 드롭다운 제어
+        function toggleAdminDropdown() {
+            if(!isAdmin) return;
+            const dropdown = document.getElementById('adminDropdown');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        }
+        function logoutAdmin(e) {
+            e.stopPropagation();
+            isAdmin = false;
+            document.getElementById('adminDropdown').style.display = 'none';
+            document.getElementById('btnAdminLogin').style.display = 'flex'; document.getElementById('adminMenuGroup').style.display = 'none'; 
+            const indicator = document.getElementById('modeIndicator');
+            indicator.innerHTML = '👤 사용자 모드'; indicator.style.background = '#E9ECEF'; indicator.style.color = '#495057';
+            goToHome();
         }
 
-        // --- 지도 및 커스텀 마커 ---
+        // --- 지도 및 스마트 마커 (중첩 해결) ---
         function initMap() { try { map = new naver.maps.Map('map', { center: new naver.maps.LatLng(36.7696, 126.9314), zoom: 15 }); } catch(e) {} }
 
         function drawMarkers(list, highlightId = null) {
             markers.forEach(m => m.setMap(null)); markers = [];
+            
+            // 캠퍼스 고정 마커 생성
+            try {
+                let uniMarker = new naver.maps.Marker({
+                    position: new naver.maps.LatLng(36.7696, 126.9314), map: map,
+                    icon: { content: `<div class="custom-marker marker-uni"><span class="marker-icon">🏫</span> <span class="text">순천향대학교</span></div>` }
+                });
+                markers.push(uniMarker);
+            } catch(e) {}
+
             list.forEach(rest => {
-                // 커스텀 HTML 마커 적용
                 let isHighlight = highlightId === rest.id;
-                let bounceClass = isHighlight ? 'marker-bounce' : '';
+                let bounceClass = isHighlight ? 'marker-bounce active' : '';
                 let iconStr = rest.type === 'cafe' ? '☕' : '🍽️';
                 let colorClass = rest.type === 'cafe' ? 'marker-cafe' : 'marker-rest';
                 
-                let content = `<div class="custom-marker ${colorClass} ${bounceClass}">${iconStr} ${rest.name}</div>`;
+                let content = `<div class="custom-marker ${colorClass} ${bounceClass}"><span class="marker-icon">${iconStr}</span> <span class="text">${rest.name}</span></div>`;
                 
                 let marker = new naver.maps.Marker({
-                    position: new naver.maps.LatLng(rest.lat, rest.lng),
-                    map: map,
-                    icon: { content: content, size: new naver.maps.Size(120, 30), anchor: new naver.maps.Point(60, 30) }
+                    position: new naver.maps.LatLng(rest.lat, rest.lng), map: map, title: rest.name,
+                    icon: { content: content } // Size 미지정으로 Hover 시 CSS 크기 변화 허용
                 });
                 
                 naver.maps.Event.addListener(marker, 'click', function() { openInfoPanel(rest.id); });
@@ -499,7 +542,8 @@
                 r.name.toLowerCase().includes(query) || 
                 r.tags.some(tag => tag.toLowerCase().includes(query)) ||
                 (query === '식당' && r.type === 'restaurant') ||
-                (query === '카페' && r.type === 'cafe')
+                (query === '카페' && r.type === 'cafe') ||
+                (query === '제휴' && r.isPartner)
             );
             
             try { drawMarkers(filtered); } catch(e){}
@@ -519,30 +563,33 @@
             if (rest) { try { map.morph(new naver.maps.LatLng(rest.lat, rest.lng), 16); drawMarkers(restaurants.filter(r => !r.isHidden), id); } catch(e){} openInfoPanel(id); }
         }
 
-        // 목적별 듀얼 룰렛 로직
         function triggerRandomPick(type) {
             const activeList = restaurants.filter(r => !r.isHidden && r.type === type);
             if(activeList.length === 0) return alert((type==='cafe'?'카페':'식당') + " 데이터가 없습니다.");
             
             switchTab('tab-home', document.querySelectorAll('.nav-item')[1]);
-            document.getElementById('searchInput').value = '';
-            document.getElementById('searchResults').style.display = 'none';
+            document.getElementById('searchInput').value = ''; document.getElementById('searchResults').style.display = 'none';
             
             const picked = activeList[Math.floor(Math.random() * activeList.length)];
-            try { map.morph(new naver.maps.LatLng(picked.lat, picked.lng), 16); drawMarkers(restaurants.filter(r => !r.isHidden), picked.id); } catch(e){}
+            try { map.morph(new naver.maps.LatLng(picked.lat, picked.lng), 16); drawMarkers(activeList, picked.id); } catch(e){}
             setTimeout(() => { openInfoPanel(picked.id); }, 400);
         }
 
-        // --- 스플릿 뷰 패널 (주변 카페 추천 포함) ---
-        function generateNearbyCafeHtml(targetLat, targetLng) {
-            let cafes = restaurants.filter(r => !r.isHidden && r.type === 'cafe');
-            cafes.forEach(c => { c.dist = getDistance(targetLat, targetLng, c.lat, c.lng); });
-            cafes.sort((a,b) => a.dist - b.dist);
-            let closest = cafes.slice(0, 2); // 반경 내 가장 가까운 2개
+        // --- 상호 교차 추천 (식당<->카페) UI ---
+        function generateCrossSuggestHtml(targetLat, targetLng, currentType) {
+            let targetType = currentType === 'restaurant' ? 'cafe' : 'restaurant';
+            let targetIcon = currentType === 'restaurant' ? '☕' : '🍽️';
+            let targetTitle = currentType === 'restaurant' ? '식후 추천 카페' : '주변 식당 추천';
+            
+            let list = restaurants.filter(r => !r.isHidden && r.type === targetType);
+            list.forEach(c => { c.dist = getDistance(targetLat, targetLng, c.lat, c.lng); });
+            list.sort((a,b) => a.dist - b.dist);
+            let closest = list.slice(0, 2); 
 
             if(closest.length > 0) {
-                let html = `<div style="font-size: 15px; font-weight: 700; margin: 20px 0 10px; color:var(--cafe-color);">☕ 식후 주변 카페 추천</div><div class="nearby-cafe-box">`;
+                let html = `<div style="font-size: 15px; font-weight: 700; margin: 20px 0 10px; color:${currentType==='restaurant'?'var(--cafe-color)':'var(--primary)'};">${targetIcon} 반경 1.5km ${targetTitle}</div><div class="nearby-box">`;
                 closest.forEach(c => {
+                    if(c.dist > 1.5) return; // 1.5km 밖이면 스킵
                     let distStr = c.dist < 1 ? Math.round(c.dist*1000) + 'm' : c.dist.toFixed(1) + 'km';
                     html += `
                     <div class="nearby-card" onclick="selectRestaurant(${c.id})">
@@ -556,6 +603,7 @@
             return '';
         }
 
+        // --- 스플릿 뷰 패널 ---
         function openInfoPanel(id) {
             const rest = restaurants.find(r => r.id === id); if(!rest) return;
             currentInfoRestId = id;
@@ -564,23 +612,23 @@
             document.getElementById('infoContent').style.display = 'flex';
             if(window.innerWidth <= 768) { document.getElementById('infoPanel').classList.add('mobile-open'); }
 
-            let badgeHtml = rest.type === 'cafe' ? `<span class="type-badge bg-cafe">☕ 카페</span>` : `<span class="type-badge bg-rest">🍽️ 식당</span>`;
+            let badgeHtml = rest.type === 'cafe' ? `<span class="type-badge bg-cafe">카페</span>` : `<span class="type-badge bg-rest">식당</span>`;
             document.getElementById('infoTitle').innerHTML = `${badgeHtml} ${rest.name}`;
             
             const likeBtn = document.getElementById('infoLikeBtn');
             likeBtn.innerText = `❤️ 추천하기 ${rest.likes}`;
             likeBtn.onclick = function() { increaseLike(rest.id, likeBtn); }; 
             
+            let partnerHtml = rest.isPartner ? `<div style="background:#F3E5F5; color:var(--partner-color); padding:10px 14px; border-radius:10px; font-size:14px; font-weight:700; margin-bottom:12px;">🤝 순천향대 제휴: ${rest.partnerBenefit || '혜택 제공'}</div>` : '';
+
             document.getElementById('infoMetaArea').innerHTML = `
+                ${partnerHtml}
                 <div><strong>📍 주소:</strong> ${rest.address || '정보 없음'}</div>
                 <div style="margin-top:4px;"><strong>⏱️ 시간:</strong> <span class="time-badge">${rest.time || '정보 없음'}</span></div>
                 <div style="margin-top:8px;">${rest.tags.map(t => `<span class="tag-badge">${t}</span>`).join('')}</div>
             `;
             
-            // 식당일 경우 주변 카페 동적 삽입
-            const nearbyArea = document.getElementById('nearbyCafeArea');
-            if (rest.type === 'restaurant') nearbyArea.innerHTML = generateNearbyCafeHtml(rest.lat, rest.lng);
-            else nearbyArea.innerHTML = '';
+            document.getElementById('nearbyCrossArea').innerHTML = generateCrossSuggestHtml(rest.lat, rest.lng, rest.type);
             
             const photoDiv = document.getElementById('infoMenuPhoto');
             if (rest.photo) photoDiv.innerHTML = `<img src="${rest.photo}">`;
@@ -607,33 +655,37 @@
             if (btnElement) btnElement.innerHTML = `❤️ 추천하기 ${restaurants[idx].likes}`; renderUserList(); 
         }
 
+        function getTodayDateStr() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+
         function renderInfoReviews() {
             const rest = restaurants.find(r => r.id === currentInfoRestId);
             const container = document.getElementById('infoReviews'); container.innerHTML = '';
-            if(!rest || !rest.reviews || rest.reviews.length === 0) { container.innerHTML = '<div style="color:#999; font-size:13px;">작성된 한줄평이 없습니다.</div>'; return; }
-            rest.reviews.forEach(rev => { container.innerHTML += `<div class="review-box">${rev}</div>`; });
+            if(!rest || !rest.reviews || rest.reviews.length === 0) { container.innerHTML = '<div style="color:#999; font-size:13px; text-align:center; padding:15px 0;">작성된 한줄평이 없습니다.</div>'; return; }
+            rest.reviews.forEach(rev => { container.innerHTML += `<div class="review-box"><div><span class="review-meta">${rev.date}</span><span class="review-text">${rev.text}</span></div></div>`; });
         }
 
         function addReview() {
             const input = document.getElementById('newReviewInput'); const text = input.value.trim();
             if(!text) return alert("내용을 입력해주세요.");
             const idx = restaurants.findIndex(r => r.id === currentInfoRestId); if(idx === -1) return;
+            
             if(!restaurants[idx].reviews) restaurants[idx].reviews = [];
-            restaurants[idx].reviews.push(text); saveMasterDataSilent(); renderInfoReviews(); input.value = '';
+            restaurants[idx].reviews.push({ text: text, date: getTodayDateStr() }); saveMasterDataSilent(); renderInfoReviews(); input.value = '';
         }
 
         // --- 사용자 전체 목록 ---
         function renderUserList() {
             const tbody = document.getElementById('user-list-tbody'); if(!tbody) return;
             const sortedList = [...restaurants].filter(r => !r.isHidden).sort((a,b) => b.likes - a.likes);
-            if(sortedList.length === 0) { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:30px;">등록된 데이터가 없습니다.</td></tr>`; return; }
+            if(sortedList.length === 0) { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:30px;">데이터가 없습니다.</td></tr>`; return; }
             
             tbody.innerHTML = sortedList.map(r => {
                 let badge = r.type === 'cafe' ? `<span class="type-badge bg-cafe" style="font-size:10px;">☕</span>` : `<span class="type-badge bg-rest" style="font-size:10px;">🍽️</span>`;
+                let partner = r.isPartner ? `<span class="type-badge bg-partner" style="font-size:10px;">🤝 제휴</span>` : ``;
                 return `
                 <tr>
-                    <td><div class="item-title" style="cursor:pointer;" onclick="openFromList(${r.id})">${badge} ${r.name}</div></td>
-                    <td><div class="item-sub">${r.address || '-'} <button class="copy-btn" onclick="copyText('${r.address || ''}')">복사</button></div></td>
+                    <td><div class="item-title" style="cursor:pointer;" onclick="openFromList(${r.id})">${badge} ${r.name} ${partner}</div></td>
+                    <td><div class="item-sub" style="font-size:15px;">${r.address || '-'} <button class="copy-btn" onclick="copyText('${r.address || ''}')">복사</button></div></td>
                     <td>
                         <div style="margin-bottom:4px;">${r.tags.map(t => `<span class="tag-badge">${t}</span>`).join('')}</div>
                         <span class="time-badge">${r.time || '정보 없음'}</span>
@@ -644,7 +696,7 @@
         }
         function openFromList(id) { switchTab('tab-home', document.querySelectorAll('.nav-item')[1]); selectRestaurant(id); }
 
-        // --- 우측 리뷰/메뉴판 슬라이드 창 ---
+        // --- 우측 리뷰 슬라이드 창 ---
         function openSlidePanel(id) {
             const rest = restaurants.find(r => r.id === id); if(!rest) return;
             slideRestId = id;
@@ -654,9 +706,7 @@
             slideLikeBtn.innerText = `❤️ 추천하기 ${rest.likes}`;
             slideLikeBtn.onclick = function() { increaseLikeFromSlide(rest.id, slideLikeBtn); };
             
-            const nearbyArea = document.getElementById('slideNearbyCafeArea');
-            if (rest.type === 'restaurant') nearbyArea.innerHTML = generateNearbyCafeHtml(rest.lat, rest.lng);
-            else nearbyArea.innerHTML = '';
+            document.getElementById('slideNearbyCrossArea').innerHTML = generateCrossSuggestHtml(rest.lat, rest.lng, rest.type);
 
             const photoDiv = document.getElementById('slideMenuPhoto');
             if (rest.photo) photoDiv.innerHTML = `<img src="${rest.photo}">`;
@@ -674,21 +724,21 @@
             const rest = restaurants.find(r => r.id === slideRestId);
             const container = document.getElementById('slideReviews'); container.innerHTML = '';
             if(!rest.reviews || rest.reviews.length === 0) { container.innerHTML = '<div style="color:#999; font-size:14px; text-align:center; padding:20px;">첫 리뷰를 남겨주세요!</div>'; return; }
-            rest.reviews.forEach(rev => { container.innerHTML += `<div class="review-box">${rev}</div>`; });
+            rest.reviews.forEach(rev => { container.innerHTML += `<div class="review-box"><div><span class="review-meta">${rev.date}</span><span class="review-text">${rev.text}</span></div></div>`; });
         }
         function addReviewFromSlide() {
             const input = document.getElementById('slideNewReview'); const text = input.value.trim();
             if(!text) return alert("내용을 입력해주세요.");
             const idx = restaurants.findIndex(r => r.id === slideRestId); if(idx === -1) return;
             if(!restaurants[idx].reviews) restaurants[idx].reviews = [];
-            restaurants[idx].reviews.push(text); saveMasterDataSilent(); renderSlideReviews(); input.value = '';
+            restaurants[idx].reviews.push({text: text, date: getTodayDateStr()}); saveMasterDataSilent(); renderSlideReviews(); input.value = '';
         }
         function increaseLikeFromSlide(id, btnElement) {
             const idx = restaurants.findIndex(r => r.id === id); restaurants[idx].likes++; saveMasterDataSilent();
             if(btnElement) btnElement.innerText = `❤️ 추천하기 ${restaurants[idx].likes}`; renderUserList();
         }
 
-        // --- 식당 제보 ---
+        // --- 제보 기능 ---
         function submitSuggestion() {
             const type = document.querySelector('input[name="suggestType"]:checked').value;
             const name = document.getElementById('suggestName').value.trim();
@@ -709,13 +759,19 @@
             });
         }
 
+        function togglePartnerInput(mode) {
+            const checkbox = document.getElementById(mode === 'add' ? 'restPartner' : 'editPartner');
+            const input = document.getElementById(mode === 'add' ? 'restPartnerBenefit' : 'editPartnerBenefit');
+            input.style.display = checkbox.checked ? 'block' : 'none';
+        }
+
         // --- 관리자 모드 ---
         function checkAdminPassword() {
             if(document.getElementById('adminPassword').value === "1234") {
                 isAdmin = true;
                 document.getElementById('btnAdminLogin').style.display = 'none'; document.getElementById('adminMenuGroup').style.display = 'flex'; 
                 const indicator = document.getElementById('modeIndicator');
-                indicator.innerHTML = '⚙️ 관리자 모드 <span style="font-size:10px;">(클릭 시 로그아웃)</span>'; indicator.style.background = '#FFF5F5'; indicator.style.color = '#FA5252';
+                indicator.innerHTML = '⚙️ 관리자 모드 ▼'; indicator.style.background = '#FFF5F5'; indicator.style.color = '#FA5252';
                 switchTab('tab-admin-manage', document.querySelectorAll('.admin-nav-item')[2]); 
                 updateAppView();
             } else alert("비밀번호가 틀렸습니다.");
@@ -731,7 +787,7 @@
                 <tr>
                     <td>
                         <div style="margin-bottom:4px;">${badge} <strong>${s.name}</strong> ${isDup ? '<span style="color:#FA5252; font-size:12px; font-weight:700;">⚠️ 중복의심</span>' : ''}</div>
-                        <div style="font-size:13px; color:var(--text-muted);">${s.address}</div>
+                        <div style="font-size:14px; color:var(--text-muted);">${s.address}</div>
                     </td>
                     <td><div style="margin-bottom:6px;">${s.tags.map(t => `<span class="tag-badge" style="background:#FFEAA7;">${t}</span>`).join('')}</div></td>
                     <td>
@@ -741,8 +797,8 @@
                                 <input type="text" id="approveLng_${s.id}" class="form-control" placeholder="경도" style="padding:6px; font-size:12px; height:30px;">
                             </div>
                             <div class="btn-group-equal">
-                                <button class="btn btn-success" onclick="approveSuggestion(${s.id})">승인</button>
-                                <button class="btn btn-danger" onclick="rejectSuggestion(${s.id})">반려</button>
+                                <button class="btn btn-success" style="padding:4px 6px; font-size:12px;" onclick="approveSuggestion(${s.id})">승인</button>
+                                <button class="btn btn-danger" style="padding:4px 6px; font-size:12px;" onclick="rejectSuggestion(${s.id})">반려</button>
                             </div>
                         </div>
                     </td>
@@ -756,7 +812,7 @@
             if(isNaN(lat) || isNaN(lng)) return alert("승인을 위해 좌표를 입력해주세요.");
             
             const item = suggestions.find(s => s.id === id);
-            restaurants.push({ id: Date.now(), type: item.type, name: item.name, address: item.address, lat: lat, lng: lng, photo: item.photo, reviews: [], tags: item.tags.length > 0 ? item.tags : ["#신규제보"], likes: 0, isHidden: false, time: item.time || "정보 없음" });
+            restaurants.push({ id: Date.now(), type: item.type, name: item.name, address: item.address, lat: lat, lng: lng, photo: item.photo, reviews: [], tags: item.tags.length > 0 ? item.tags : ["#신규제보"], likes: 0, isHidden: false, time: item.time || "정보 없음", isPartner: false, partnerBenefit: "" });
             suggestions = suggestions.filter(s => s.id !== id);
             localStorage.setItem('sch_suggest_v14', JSON.stringify(suggestions)); 
             saveMasterDataSilent(); updateAppView(); alert("승인되었습니다.");
@@ -765,6 +821,8 @@
 
         function addRestaurant() {
             const type = document.querySelector('input[name="restType"]:checked').value;
+            const isPartner = document.getElementById('restPartner').checked;
+            const partnerBenefit = document.getElementById('restPartnerBenefit').value.trim();
             const name = document.getElementById('restName').value.trim();
             const addr = document.getElementById('restAddr').value.trim();
             const lat = parseFloat(document.getElementById('restLat').value);
@@ -776,7 +834,7 @@
             if(!name || isNaN(lat) || isNaN(lng)) return alert("이름과 좌표는 필수입니다.");
             const tagsArray = tagsInput.split(' ').filter(t => t.startsWith('#') && t.length > 1);
             
-            let item = { id: Date.now(), type, name, address: addr, lat, lng, photo: "", reviews: [], tags: tagsArray, likes: 0, isHidden: false, time: time || "정보 없음" };
+            let item = { id: Date.now(), type, name, address: addr, lat, lng, photo: "", reviews: [], tags: tagsArray, likes: 0, isHidden: false, time: time || "정보 없음", isPartner, partnerBenefit };
             
             if(photoInput.files && photoInput.files[0]) {
                 compressImage(photoInput.files[0], function(compressedData) {
@@ -784,7 +842,8 @@
                 });
             } else { restaurants.push(item); saveMasterDataSilent(); updateAppView(); }
             
-            ['restName', 'restAddr', 'restLat', 'restLng', 'restTime', 'restTags', 'restPhoto'].forEach(id => document.getElementById(id).value = '');
+            ['restName', 'restAddr', 'restLat', 'restLng', 'restTime', 'restTags', 'restPhoto', 'restPartnerBenefit'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById('restPartner').checked = false; document.getElementById('restPartnerBenefit').style.display = 'none';
             alert("공식 등록되었습니다.");
         }
 
@@ -797,25 +856,24 @@
                     return `
                         <tr style="background-color: #f1f8ff;">
                             <td>
-                                <select id="editType_${r.id}" class="form-control" style="margin-bottom:5px; padding:8px;">
+                                <select id="editType_${r.id}" class="form-control" style="margin-bottom:5px; padding:6px; font-size:12px;">
                                     <option value="restaurant" ${r.type==='restaurant'?'selected':''}>🍽️ 식당</option>
                                     <option value="cafe" ${r.type==='cafe'?'selected':''}>☕ 카페</option>
                                 </select>
-                                <input type="text" id="editName_${r.id}" class="form-control" value="${r.name}" placeholder="장소명" style="margin-bottom:5px; padding:8px;">
-                                <input type="text" id="editAddr_${r.id}" class="form-control" value="${r.address}" placeholder="주소" style="padding:8px;">
+                                <input type="text" id="editName_${r.id}" class="form-control" value="${r.name}" style="margin-bottom:5px; padding:6px; font-size:12px;">
+                                <input type="text" id="editAddr_${r.id}" class="form-control" value="${r.address || ''}" placeholder="주소" style="padding:6px; font-size:12px;">
                             </td>
                             <td>
                                 <div style="display:flex; gap:4px; margin-bottom:5px;">
-                                    <input type="text" id="editLat_${r.id}" class="form-control" value="${r.lat}" placeholder="위도" style="padding:8px;">
-                                    <input type="text" id="editLng_${r.id}" class="form-control" value="${r.lng}" placeholder="경도" style="padding:8px;">
+                                    <input type="text" id="editLat_${r.id}" class="form-control" value="${r.lat}" style="padding:6px; font-size:12px;">
+                                    <input type="text" id="editLng_${r.id}" class="form-control" value="${r.lng}" style="padding:6px; font-size:12px;">
                                 </div>
-                                <input type="file" id="editPhoto_${r.id}" accept="image/*" style="width:100%; padding:5px; box-sizing:border-box;">
-                                <div style="font-size:11px; color:#888; margin-top:2px;">* 사진 미선택 시 기존 유지</div>
+                                <input type="file" id="editPhoto_${r.id}" accept="image/*" style="width:100%; padding:4px; font-size:11px; box-sizing:border-box;">
                             </td>
                             <td>
                                 <div class="btn-group-equal" style="margin-bottom:5px;">
-                                    <button class="btn btn-success" onclick="saveEdit(${r.id})">저장</button>
-                                    <button class="btn btn-edit" onclick="cancelEdit()">취소</button>
+                                    <button class="btn btn-success" style="padding:6px; font-size:12px;" onclick="saveEdit(${r.id})">저장</button>
+                                    <button class="btn btn-edit" style="padding:6px; font-size:12px;" onclick="cancelEdit()">취소</button>
                                 </div>
                             </td>
                         </tr>`;
@@ -824,20 +882,20 @@
                     return `
                         <tr>
                             <td>
-                                <div style="margin-bottom:4px;">${badge} <strong style="color:var(--primary); font-size:15px;">${r.name}</strong></div>
+                                <div style="margin-bottom:4px;">${badge} <strong style="color:var(--primary); font-size:14px;">${r.name}</strong></div>
                                 ${r.isHidden ? '<span style="color:#FA5252; font-size:12px; font-weight:700;">[숨김상태]</span>' : ''}
                             </td>
-                            <td style="font-size:13px; color:var(--text-muted);">
-                                ${r.address || '주소없음'}<br>좌표: ${r.lat} / ${r.lng}
+                            <td style="font-size:15px; color:var(--text-muted);">
+                                ${r.address || '주소없음'}<br><span style="font-size:12px;">좌표: ${r.lat} / ${r.lng}</span>
                             </td>
                             <td>
                                 <div class="btn-group-equal" style="margin-bottom:5px;">
-                                    <button class="btn btn-edit" onclick="startEdit(${r.id})">수정</button>
-                                    <button class="btn ${r.isHidden ? 'btn-success' : 'btn-edit'}" style="color:${r.isHidden ? '#2B8A3E' : ''}" onclick="toggleHide(${r.id})">${r.isHidden ? '노출' : '숨김'}</button>
+                                    <button class="btn btn-edit" style="padding:6px; font-size:12px;" onclick="startEdit(${r.id})">수정</button>
+                                    <button class="btn ${r.isHidden ? 'btn-success' : 'btn-edit'}" style="color:${r.isHidden ? '#2B8A3E' : ''}; padding:6px; font-size:12px;" onclick="toggleHide(${r.id})">${r.isHidden ? '노출' : '숨김'}</button>
                                 </div>
                                 <div class="btn-group-equal">
-                                    <button class="btn btn-danger" onclick="deleteRestaurant(${r.id})">삭제</button>
-                                    <button class="btn btn-outline" style="border:1px solid #ccc; color:#555;" onclick="openAdminReviewModal(${r.id})">리뷰 관리</button>
+                                    <button class="btn btn-danger" style="padding:6px; font-size:12px;" onclick="deleteRestaurant(${r.id})">삭제</button>
+                                    <button class="btn btn-outline" style="border:1px solid #ccc; color:#555; padding:6px; font-size:12px;" onclick="openAdminReviewModal(${r.id})">리뷰 관리</button>
                                 </div>
                             </td>
                         </tr>`;
@@ -879,7 +937,7 @@
                 rest.reviews.forEach((rev, idx) => {
                     listDiv.innerHTML += `
                         <div class="review-box" style="display:flex; justify-content:space-between; align-items:center;">
-                            <div style="flex:1; padding-right:10px; font-size:13px;">${rev}</div>
+                            <div style="flex:1; padding-right:10px; font-size:13px;"><span style="color:#888; font-size:11px; display:block;">${rev.date}</span>${rev.text}</div>
                             <button class="btn btn-danger" style="padding:4px 8px; font-size:12px; flex-shrink:0;" onclick="deleteReviewAdmin(${id}, ${idx})">삭제</button>
                         </div>`;
                 });
@@ -896,17 +954,18 @@
         }
 
         function downloadCSV() {
-            let csv = '\uFEFF식당명,유형,주소,위도,경도,태그,추천수\n';
+            let csv = '\uFEFF식당명,유형,주소,위도,경도,태그,추천수,제휴업체\n';
             restaurants.forEach(r => {
                 const safeName = r.name.replace(/,/g, ' ');
                 const typeName = r.type === 'cafe' ? '카페' : '식당';
                 const safeAddr = (r.address || '').replace(/,/g, ' ');
                 const tags = r.tags.join(' ');
-                csv += `${safeName},${typeName},${safeAddr},${r.lat},${r.lng},${tags},${r.likes}\n`;
+                const partner = r.isPartner ? 'O' : 'X';
+                csv += `${safeName},${typeName},${safeAddr},${r.lat},${r.lng},${tags},${r.likes},${partner}\n`;
             });
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement("a"); link.href = URL.createObjectURL(blob);
-            link.download = `SCH_점심플랫폼_백업_${new Date().toISOString().substring(0,10)}.csv`;
+            link.download = `SCH_점심플랫폼_백업_${getTodayDateStr()}.csv`;
             link.style.display = 'none'; document.body.appendChild(link); link.click(); document.body.removeChild(link);
         }
     </script>
