@@ -114,6 +114,7 @@
         .review-meta { font-size: 11px; color: #888; margin-bottom: 6px; display: block; font-weight: 600; }
         .review-text { color: #333; line-height: 1.4; }
 
+        /* 커스텀 스마트 마커 */
         .custom-marker { background: white; border: 2px solid; padding: 6px 8px; border-radius: 20px; font-size: 13px; font-weight: 700; color: #333; box-shadow: 0 3px 6px rgba(0,0,0,0.15); white-space: nowrap; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 4px; z-index: 10; }
         .custom-marker .text { display: none; } 
         .custom-marker:hover, .custom-marker.active { z-index: 1000 !important; padding: 6px 12px; transform: scale(1.05); }
@@ -130,7 +131,7 @@
         .nearby-card:hover { border-color: var(--primary); box-shadow: 0 4px 10px rgba(0,85,165,0.1); }
         .nearby-title { font-weight: 700; font-size: 14px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* 공통 UI 요소 */
+        /* 공통 폼 UI */
         .card { background: var(--card-bg); border-radius: 16px; padding: 25px; margin-bottom: 24px; border: 1px solid var(--border-color); }
         .card-title { font-size: 20px; font-weight: 700; margin-top: 0; margin-bottom: 20px; color: var(--text-main); }
         .form-group { display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px; }
@@ -162,7 +163,7 @@
         .toss-list td { padding: 15px 10px; border-bottom: 1px solid #F2F4F6; vertical-align: middle; font-size: 15px;}
         .like-btn { font-weight: 700; font-size: 14px; color: #FA5252; cursor: pointer; border: 1px solid #FFE3E3; background: #FFF5F5; padding: 6px 12px; border-radius: 20px; display: inline-block; transition: 0.1s;}
         
-        /* 팝업 모달 */
+        /* 팝업 모달 전면 조치 */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); display: none; justify-content: center; align-items: center; z-index: 4000; backdrop-filter: blur(4px); }
         .modal-overlay.show { display: flex !important; }
         
@@ -199,7 +200,6 @@
 </head>
 <body>
 
-    <!-- 좌측 사이드바 -->
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <div class="logo" onclick="goToHome()">
@@ -251,7 +251,6 @@
         </div>
     </nav>
 
-    <!-- 우측 메인 영역 -->
     <div class="main-wrapper">
         <header class="topbar">
             <div class="mode-indicator" id="modeIndicator" onclick="toggleAdminDropdown()">
@@ -264,7 +263,6 @@
 
         <div class="content-container">
             
-            <!-- 탭 1: 지도/검색 뷰 -->
             <div id="tab-home" class="tab-content active" style="max-width: none; padding:0;">
                 <div class="split-layout">
                     <div class="map-section">
@@ -276,13 +274,11 @@
                             <div class="chip-container" id="dynamicTagsArea"></div>
                         </div>
                         <div id="map">
-                            <div style="color:#999; font-size:14px; text-align:center;">지도 로딩 대기중...</div>
+                            <div style="color:#999; font-size:14px; text-align:center; padding-top:40%;">지도 로딩 대기중...<br><span style="font-size:12px;">(기능은 정상 작동합니다)</span></div>
                         </div>
-                        <!-- V17.0 추가: GPS 내 위치 이동 버튼 -->
                         <button class="btn-gps" onclick="moveToCurrentLocation()" title="내 위치로 이동">🎯</button>
                     </div>
                     
-                    <!-- 우측 정보 패널 -->
                     <div class="info-section" id="infoPanel">
                         <div id="infoPlaceholder">
                             <div style="font-size: 40px; margin-bottom: 15px;">👈</div>
@@ -313,7 +309,6 @@
                                 <div style="font-size: 15px; font-weight: 700; margin: 15px 0 5px; flex-shrink:0;">💬 교직원 리뷰</div>
                                 <div class="review-list-container" id="infoReviews"></div>
                                 
-                                <!-- V17.0 추가: 닉네임 입력란 -->
                                 <div style="display: flex; gap: 8px; flex-shrink:0;">
                                     <input type="text" id="newReviewNickname" class="form-control" placeholder="닉네임" style="width: 80px; padding: 10px;">
                                     <input type="text" id="newReviewInput" class="form-control" placeholder="한 줄 평 남기기" style="flex:1; padding: 10px;" onkeypress="if(event.keyCode===13) addReview()">
@@ -325,7 +320,6 @@
                 </div>
             </div>
 
-            <!-- 탭 2: 전체 목록 -->
             <div id="tab-list" class="tab-content">
                 <div class="card">
                     <h2 class="card-title">교직원 연동 장소 목록</h2>
@@ -338,7 +332,6 @@
                 </div>
             </div>
 
-            <!-- 탭 3: 장소 제보 -->
             <div id="tab-suggest" class="tab-content">
                 <div class="card">
                     <h2 class="card-title">신규 장소 제보</h2>
@@ -358,7 +351,6 @@
                 </div>
             </div>
 
-            <!-- 탭 4: 관리자 로그인 -->
             <div id="tab-admin-login" class="tab-content">
                 <div class="card" style="text-align: center; padding: 60px 20px; max-width: 400px; margin: 50px auto;">
                     <h2 class="card-title" style="border:none;">관리자 인증</h2>
@@ -369,7 +361,6 @@
                 </div>
             </div>
 
-            <!-- V17.0 탭 5: 리뷰 통합 관리 -->
             <div id="tab-admin-reviews" class="tab-content">
                 <div class="card">
                     <h2 class="card-title">💬 전체 리뷰 통합 관리 (최신순)</h2>
@@ -382,7 +373,6 @@
                 </div>
             </div>
 
-            <!-- 탭 6: 제보함 -->
             <div id="tab-admin-suggest" class="tab-content">
                 <div class="card" style="background-color: #FFFDF4; border-color: #FFEAA7;">
                     <h2 class="card-title" style="color: #D39E00;">📥 건의 제보함</h2>
@@ -395,7 +385,6 @@
                 </div>
             </div>
 
-            <!-- 탭 7: 신규 등록 -->
             <div id="tab-admin-add" class="tab-content">
                 <div class="card">
                     <h2 class="card-title">신규 장소 직접 등록</h2>
@@ -423,7 +412,6 @@
                 </div>
             </div>
 
-            <!-- 탭 8: 목록 관리 -->
             <div id="tab-admin-manage" class="tab-content">
                 <div class="card">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap:wrap; gap:10px;">
@@ -445,7 +433,6 @@
         </div>
     </div>
 
-    <!-- 우측 리뷰 슬라이드 창 -->
     <div class="slide-overlay" id="slideOverlay" onclick="closeSlidePanel()"></div>
     <div class="slide-panel" id="slidePanel">
         <div class="info-header">
@@ -468,7 +455,6 @@
             <div style="font-size: 15px; font-weight: 700; margin: 0 0 10px; flex-shrink:0;">💬 교직원 리뷰</div>
             <div class="review-list-container" id="slideReviews"></div>
             
-            <!-- V17.0 추가: 닉네임 입력란 -->
             <div style="display: flex; gap: 8px; flex-shrink: 0;">
                 <input type="text" id="slideNewReviewNickname" class="form-control" placeholder="닉네임" style="width: 80px; padding: 10px;">
                 <input type="text" id="slideNewReview" class="form-control" placeholder="한 줄 평 남기기" style="flex:1; padding: 10px;" onkeypress="if(event.keyCode===13) addReviewFromSlide()">
@@ -477,7 +463,6 @@
         </div>
     </div>
 
-    <!-- 다중 사진 뷰어 모달 -->
     <div class="modal-overlay" id="photoViewerModal">
         <div class="modal-content" id="photoViewerModalContent">
             <span onclick="closePhotoModal()" style="color:white; align-self:flex-end; font-size:36px; display:block; margin-bottom:10px; cursor:pointer; font-weight:bold; line-height:1;">&times;</span>
@@ -487,6 +472,16 @@
                 <button class="photo-nav-btn photo-btn-next" onclick="nextPhoto()">❯</button>
             </div>
             <div id="photoModalIndicator" style="color:white; margin-top:15px; font-weight:bold; font-size:16px; text-align:center; width:100%;">1 / 1</div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="adminReviewModal">
+        <div class="modal-content" style="background:#fff; max-height:85vh; padding:30px; border-radius:20px;">
+            <div class="info-header" style="padding: 0 0 15px 0; margin-bottom: 15px; border-bottom: 1px solid #eee;">
+                <h2 class="info-title" style="font-size:20px;">리뷰 개별 관리</h2>
+                <button class="btn-close-info" onclick="closeAdminReviewModal()" style="display:block; position:absolute; top:25px; right:25px;">×</button>
+            </div>
+            <div id="adminReviewList" class="review-list-container" style="max-height: 350px;"></div>
         </div>
     </div>
 
@@ -503,13 +498,13 @@
         let currentPhotoArray = [];
         let currentPhotoIndex = 0;
 
-        document.addEventListener("DOMContentLoaded", function() {
+        // 시스템 실행을 보장하는 최우선 로드 블록
+        window.onload = function() {
             try {
-                const savedData = localStorage.getItem('sch_master_v17');
+                const savedData = localStorage.getItem('sch_master_v17_1');
                 if (savedData) restaurants = JSON.parse(savedData);
                 else { restaurants = defaultRestaurants; saveMasterDataSilent(); }
 
-                // 데이터 마이그레이션 (타임스탬프 및 닉네임 추가)
                 restaurants.forEach(r => {
                     if(r.reviews && r.reviews.length > 0) { 
                         r.reviews = r.reviews.map(rev => {
@@ -524,24 +519,29 @@
                     if(!r.regDate) r.regDate = "2026-05-30";
                 });
 
-                const savedSuggest = localStorage.getItem('sch_suggest_v17');
+                const savedSuggest = localStorage.getItem('sch_suggest_v17_1');
                 if (savedSuggest) suggestions = JSON.parse(savedSuggest);
 
-                // 닉네임 초기화 (로컬 스토리지 연동)
                 const savedNick = localStorage.getItem('sch_nickname');
                 if(savedNick) {
-                    document.getElementById('newReviewNickname').value = savedNick;
-                    document.getElementById('slideNewReviewNickname').value = savedNick;
+                    let el1 = document.getElementById('newReviewNickname');
+                    let el2 = document.getElementById('slideNewReviewNickname');
+                    if(el1) el1.value = savedNick;
+                    if(el2) el2.value = savedNick;
                 }
 
-                if (typeof naver !== 'undefined' && naver.maps) { initMap(); } 
-                else { console.warn("네이버 지도가 로드되지 않았으나 나머지 기능은 정상 작동합니다."); }
+                // 네이버 지도 로딩 예외 처리 (방어막)
+                if (typeof naver !== 'undefined' && naver.maps) { 
+                    initMap(); 
+                } else { 
+                    console.warn("지도 API가 연결되지 않았으나 시스템은 정상 작동합니다."); 
+                }
                 
                 updateAppView();
             } catch(e) { console.error("초기화 중 오류 발생:", e); }
-        });
+        };
 
-        window.saveMasterDataSilent = function() { localStorage.setItem('sch_master_v17', JSON.stringify(restaurants)); }
+        window.saveMasterDataSilent = function() { localStorage.setItem('sch_master_v17_1', JSON.stringify(restaurants)); }
         
         window.updateAppView = function() {
             renderDynamicTags();
@@ -549,7 +549,7 @@
             if (isAdmin) { 
                 renderAdminList(); 
                 renderAdminSuggestList(); 
-                renderAdminAllReviews(); // V17.0 추가
+                renderAdminAllReviews();
             }
             
             const badge = document.getElementById('adminBadge');
@@ -615,12 +615,11 @@
             });
         }
 
-        // V17.0 추가: 현재 위치로 지도 이동 (나침반 기능)
         window.moveToCurrentLocation = function() {
             if (!navigator.geolocation) return alert("현재 브라우저에서는 위치 정보를 지원하지 않습니다.");
             
             const btn = document.querySelector('.btn-gps');
-            btn.style.opacity = '0.5';
+            if(btn) btn.style.opacity = '0.5';
             
             navigator.geolocation.getCurrentPosition(
                 function(position) {
@@ -629,18 +628,17 @@
                     if(typeof naver !== 'undefined' && map) {
                         map.morph(new naver.maps.LatLng(lat, lng), 16);
                         
-                        // 내 위치 마커 표시
                         if(userMarker) userMarker.setMap(null);
                         let content = `<div class="custom-marker marker-user"><span class="text">내 위치</span></div>`;
                         userMarker = new naver.maps.Marker({
                             position: new naver.maps.LatLng(lat, lng), map: map, icon: { content: content } 
                         });
                     }
-                    btn.style.opacity = '1';
+                    if(btn) btn.style.opacity = '1';
                 },
                 function(error) {
                     alert("위치 정보를 가져올 수 없습니다. 스마트폰의 위치 권한을 확인해주세요.");
-                    btn.style.opacity = '1';
+                    if(btn) btn.style.opacity = '1';
                 },
                 { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
             );
@@ -711,7 +709,7 @@
             document.getElementById('adminDropdown').style.display = 'none';
             document.getElementById('btnAdminLogin').style.display = 'flex'; document.getElementById('adminMenuGroup').style.display = 'none'; 
             const indicator = document.getElementById('modeIndicator');
-            indicator.innerHTML = '👤 사용자 모드'; indicator.style.background = '#E9ECEF'; indicator.style.color = '#495057';
+            indicator.innerHTML = '👤 사용자 모드 ▼'; indicator.style.background = '#E9ECEF'; indicator.style.color = '#495057';
             goToHome();
         }
 
@@ -721,6 +719,7 @@
             try { 
                 map = new naver.maps.Map('map', { center: new naver.maps.LatLng(36.7696, 126.9314), zoom: 15 }); 
                 document.getElementById('map').style.background = 'transparent';
+                document.getElementById('map').innerHTML = ''; // 로딩 텍스트 삭제
             } catch(e) { console.warn("Map Init error", e); } 
         }
 
@@ -785,7 +784,7 @@
             document.getElementById('searchInput').value = ''; document.getElementById('searchResults').style.display = 'none';
             
             const picked = activeList[Math.floor(Math.random() * activeList.length)];
-            try { if(typeof naver !== 'undefined' && map) { map.morph(new naver.maps.LatLng(picked.lat, picked.lng), 16); drawMarkers(restaurants.filter(r => !r.isHidden), picked.id); } } catch(e){}
+            try { if(typeof naver !== 'undefined' && map) { map.morph(new naver.maps.LatLng(picked.lat, picked.lng), 16); drawMarkers(activeList, picked.id); } } catch(e){}
             setTimeout(() => { openInfoPanel(picked.id); }, 500);
         }
 
@@ -869,12 +868,13 @@
 
             let badgeHtml = rest.type === 'cafe' ? `<span class="type-badge bg-cafe">카페</span>` : `<span class="type-badge bg-rest">식당</span>`;
             document.getElementById('infoTitle').innerHTML = `${badgeHtml} ${rest.name}`;
+            document.getElementById('infoRegDate').innerText = rest.regDate;
             
             const likeBtn = document.getElementById('infoLikeBtn');
             likeBtn.innerText = `❤️ 추천하기 ${rest.likes}`;
             likeBtn.onclick = function() { increaseLike(rest.id, likeBtn); }; 
             
-            let partnerHtml = rest.isPartner ? `<div style="background:#F3E5F5; color:var(--partner-color); padding:10px 14px; border-radius:10px; font-size:14px; font-weight:700; margin-bottom:12px;">🤝 순천향대 협약: ${rest.partnerBenefit || '혜택 제공'}</div>` : '';
+            let partnerHtml = rest.isPartner ? `<div style="background:#F3E5F5; color:var(--partner-color); padding:10px 14px; border-radius:10px; font-size:14px; font-weight:700; margin-bottom:12px;">🤝 협약 업체: ${rest.partnerBenefit || '혜택 제공'}</div>` : '';
 
             document.getElementById('infoMetaArea').innerHTML = `
                 ${partnerHtml}
@@ -884,8 +884,6 @@
             `;
             
             document.getElementById('nearbyCrossArea').innerHTML = generateCrossSuggestHtml(rest.lat, rest.lng, rest.type);
-            document.getElementById('infoRegDate').innerText = rest.regDate;
-            
             renderThumbnail(rest, 'infoMenuPhoto');
             renderInfoReviews();
             document.getElementById('infoPanel').style.display = 'flex';
@@ -910,7 +908,6 @@
             rest.reviews.forEach(rev => { container.innerHTML += `<div class="review-box"><div><span class="review-meta">${rev.date} · ${rev.nickname || '익명'}</span><span class="review-text">${rev.text}</span></div></div>`; });
         }
 
-        // V17.0 추가: 닉네임 입력 및 저장
         window.addReview = function() {
             const nicknameInput = document.getElementById('newReviewNickname');
             const textInput = document.getElementById('newReviewInput');
@@ -920,7 +917,6 @@
             
             if(!text) return alert("내용을 입력해주세요.");
             
-            // 닉네임 저장
             localStorage.setItem('sch_nickname', nickname);
             
             const idx = restaurants.findIndex(r => r.id === currentInfoRestId); if(idx === -1) return;
@@ -930,7 +926,6 @@
             saveMasterDataSilent(); renderInfoReviews(); 
             textInput.value = '';
             
-            // 슬라이드 창 닉네임 동기화
             document.getElementById('slideNewReviewNickname').value = nickname;
         }
 
@@ -987,7 +982,6 @@
             rest.reviews.forEach(rev => { container.innerHTML += `<div class="review-box"><div><span class="review-meta">${rev.date} · ${rev.nickname || '익명'}</span><span class="review-text">${rev.text}</span></div></div>`; });
         }
         
-        // V17.0 추가: 닉네임 반영
         window.addReviewFromSlide = function() {
             const nicknameInput = document.getElementById('slideNewReviewNickname');
             const textInput = document.getElementById('slideNewReview');
@@ -1027,7 +1021,7 @@
 
             processMultipleImages(photoInput.files, function(photosArray) {
                 suggestions.push({ id: Date.now(), type, name, address: addr, time, tags: tagsArray, photos: photosArray });
-                localStorage.setItem('sch_suggest_v17', JSON.stringify(suggestions)); 
+                localStorage.setItem('sch_suggest_v17_1', JSON.stringify(suggestions)); 
                 updateAppView(); alert("제보가 완료되었습니다.");
                 ['suggestName', 'suggestAddr', 'suggestTime', 'suggestTags'].forEach(id => document.getElementById(id).value = '');
                 photoInput.value = '';
@@ -1046,12 +1040,11 @@
                 document.getElementById('btnAdminLogin').style.display = 'none'; document.getElementById('adminMenuGroup').style.display = 'flex'; 
                 const indicator = document.getElementById('modeIndicator');
                 indicator.innerHTML = '⚙️ 관리자 모드 ▼'; indicator.style.background = '#FFF5F5'; indicator.style.color = '#FA5252';
-                switchTab('tab-admin-manage', document.querySelectorAll('.admin-nav-item')[2]); 
+                switchTab('tab-admin-manage', document.querySelectorAll('.admin-nav-item')[3]); 
                 updateAppView();
             } else alert("비밀번호가 틀렸습니다.");
         }
 
-        // V17.0 추가: 전체 리뷰 통합 관리 로직
         window.renderAdminAllReviews = function() {
             const tbody = document.getElementById('admin-all-reviews-tbody');
             if(!tbody) return;
@@ -1073,7 +1066,6 @@
                 }
             });
             
-            // 타임스탬프 기준 최신순 정렬
             allReviews.sort((a, b) => b.timestamp - a.timestamp);
             
             if(allReviews.length === 0) {
@@ -1099,7 +1091,7 @@
                 if(idx !== -1) {
                     restaurants[idx].reviews.splice(reviewIdx, 1);
                     saveMasterDataSilent(); 
-                    renderAdminAllReviews(); // 화면 갱신
+                    renderAdminAllReviews(); 
                     alert("삭제되었습니다.");
                 }
             }
@@ -1142,11 +1134,11 @@
             const item = suggestions.find(s => s.id === id);
             restaurants.push({ id: Date.now(), type: item.type, name: item.name, address: item.address, lat: lat, lng: lng, photos: item.photos, reviews: [], tags: item.tags.length > 0 ? item.tags : ["#신규제보"], likes: 0, isHidden: false, time: item.time || "정보 없음", isPartner: false, partnerBenefit: "", regDate: getTodayDateStr() });
             suggestions = suggestions.filter(s => s.id !== id);
-            localStorage.setItem('sch_suggest_v17', JSON.stringify(suggestions)); 
+            localStorage.setItem('sch_suggest_v17_1', JSON.stringify(suggestions)); 
             saveMasterDataSilent(); updateAppView(); alert("승인되었습니다.");
         }
         
-        window.rejectSuggestion = function(id) { if(confirm("반려하시겠습니까?")) { suggestions = suggestions.filter(s => s.id !== id); localStorage.setItem('sch_suggest_v17', JSON.stringify(suggestions)); updateAppView(); } }
+        window.rejectSuggestion = function(id) { if(confirm("반려하시겠습니까?")) { suggestions = suggestions.filter(s => s.id !== id); localStorage.setItem('sch_suggest_v17_1', JSON.stringify(suggestions)); updateAppView(); } }
 
         window.addRestaurant = function() {
             const type = document.querySelector('input[name="restType"]:checked').value;
@@ -1239,6 +1231,7 @@
                                 </div>
                                 <div class="btn-group-equal">
                                     <button class="btn btn-danger" style="padding:6px; font-size:12px;" onclick="deleteRestaurant(${r.id})">삭제</button>
+                                    <button class="btn btn-outline" style="border:1px solid #ccc; color:#555; padding:6px; font-size:12px;" onclick="openAdminReviewModal(${r.id})">리뷰 관리</button>
                                 </div>
                             </td>
                         </tr>`;
@@ -1276,9 +1269,41 @@
         window.finishSaveEdit = function() { editingRestId = null; saveMasterDataSilent(); updateAppView(); filterAdminList(); }
         window.deleteRestaurant = function(id) { if(confirm("영구 삭제하시겠습니까?")) { restaurants = restaurants.filter(r => r.id !== id); saveMasterDataSilent(); updateAppView(); } }
 
+        window.openAdminReviewModal = function(id) {
+            adminReviewRestId = id;
+            const rest = restaurants.find(r => r.id === id);
+            const listDiv = document.getElementById('adminReviewList'); listDiv.innerHTML = '';
+            if(!rest.reviews || rest.reviews.length === 0) { listDiv.innerHTML = '<div style="text-align:center; color:#999; padding:20px;">작성된 리뷰가 없습니다.</div>'; } 
+            else {
+                rest.reviews.forEach((rev, idx) => {
+                    listDiv.innerHTML += `
+                        <div class="review-box" style="display:flex; justify-content:space-between; align-items:center;">
+                            <div style="flex:1; padding-right:10px; font-size:13px;"><span style="color:#888; font-size:11px; display:block;">${rev.date}</span>${rev.text}</div>
+                            <button class="btn btn-danger" style="padding:4px 8px; font-size:12px; flex-shrink:0;" onclick="deleteReviewAdmin(${id}, ${idx})">삭제</button>
+                        </div>`;
+                });
+            }
+            const modal = document.getElementById('adminReviewModal');
+            modal.style.display = 'flex';
+            modal.classList.add('show');
+        }
+        
+        window.closeAdminReviewModal = function() { 
+            const modal = document.getElementById('adminReviewModal');
+            modal.style.display = 'none';
+            modal.classList.remove('show');
+        }
+        
+        window.deleteReviewAdmin = function(restId, reviewIdx) {
+            if(confirm("이 리뷰를 삭제하시겠습니까?")) {
+                const idx = restaurants.findIndex(r => r.id === restId);
+                restaurants[idx].reviews.splice(reviewIdx, 1);
+                saveMasterDataSilent(); openAdminReviewModal(restId);
+            }
+        }
+
         window.downloadCSV = function() {
-            let csv = '﻿식당명,유형,주소,위도,경도,태그,추천수,협약여부,협약혜택,등록일자
-';
+            let csv = '\uFEFF식당명,유형,주소,위도,경도,태그,추천수,협약여부,협약혜택,등록일자\n';
             restaurants.forEach(r => {
                 const safeName = r.name.replace(/,/g, ' ');
                 const typeName = r.type === 'cafe' ? '카페' : '식당';
@@ -1286,8 +1311,7 @@
                 const tags = r.tags.join(' ');
                 const partner = r.isPartner ? 'O' : 'X';
                 const benefit = (r.partnerBenefit || '').replace(/,/g, ' ');
-                csv += `${safeName},${typeName},${safeAddr},${r.lat},${r.lng},${tags},${r.likes},${partner},${benefit},${r.regDate || '-'}
-`;
+                csv += `${safeName},${typeName},${safeAddr},${r.lat},${r.lng},${tags},${r.likes},${partner},${benefit},${r.regDate || '-'}\n`;
             });
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement("a"); link.href = URL.createObjectURL(blob);
