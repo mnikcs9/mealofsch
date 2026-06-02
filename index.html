@@ -8,7 +8,6 @@
     <script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=mlxyqndqs3"></script>
 
     <style>
-        /* (스타일은 기존 코드와 100% 동일하므로 그대로 유지합니다) */
         :root {
             --primary: #0055A5; --bg-color: #F4F6F8; --sidebar-bg: #FFFFFF; --card-bg: #FFFFFF;
             --text-main: #212529; --text-muted: #6C757D; --border-color: #E5E8EB; --sidebar-width: 260px;
@@ -19,7 +18,6 @@
             --text-main: #E0E0E0; --text-muted: #A0A0A0; --border-color: #333333;
         }
         body { font-family: 'Pretendard', sans-serif; background-color: var(--bg-color); margin: 0; color: var(--text-main); overflow: hidden; display: flex; height: 100vh; transition: background-color 0.3s, color 0.3s; }
-
         .sidebar { width: var(--sidebar-width); height: 100vh; background-color: var(--sidebar-bg); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; transition: width 0.3s cubic-bezier(0.25, 0.1, 0.25, 1), background-color 0.3s, border-color 0.3s; flex-shrink: 0; z-index: 2000; overflow: hidden; }
         .sidebar.collapsed { width: var(--sidebar-mini); }
         .sidebar-header { padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; gap: 10px; transition: 0.3s; }
@@ -380,7 +378,7 @@
                 <div class="card" style="background-color: #FFF5F5; border-color: #FFE3E3;"><h2 class="card-title" style="color: #FA5252;">🚨 정보 수정 제보함</h2><div class="table-responsive"><table class="toss-list"><thead><tr><th style="width:25%;">장소명(ID) / 일시</th><th style="width:60%;">제보 내용</th><th style="text-align: center; width:15%;">처리</th></tr></thead><tbody id="admin-corrections-tbody"></tbody></table></div></div>
             </div>
             <div id="tab-admin-add" class="tab-content"><div class="card"><h2 class="card-title">신규 장소 직접 등록</h2><div class="form-group"><div class="radio-group"><label class="radio-label"><input type="radio" name="restType" value="restaurant" checked> 🍽️ 식당</label><label class="radio-label"><input type="radio" name="restType" value="cafe"> ☕ 카페</label><span style="color:#ddd;">|</span><label class="radio-label" style="color:var(--partner-color);"><input type="checkbox" id="restPartner" onchange="togglePartnerInput('add')"> 🤝 협약 업체</label></div><input type="text" id="restPartnerBenefit" class="form-control" placeholder="협약 혜택 기입 (예: 10% 할인)" style="display:none; border-color:var(--partner-color);"><input type="text" id="restName" class="form-control" placeholder="장소명"><select id="restSubCategory" class="form-control"><option value="한식">🍚 한식</option><option value="중식">🍜 중식</option><option value="일식">🍣 일식</option><option value="양식">🍝 양식</option><option value="분식">🥟 분식</option><option value="술집">🍺 술집</option><option value="카페">☕ 카페</option><option value="기타">🍽️ 기타</option></select><input type="text" id="restAddr" class="form-control" placeholder="주소"><div style="display: flex; gap: 10px;"><input type="text" id="restLat" class="form-control" placeholder="위도 (Lat)"><input type="text" id="restLng" class="form-control" placeholder="경도 (Lng)"></div><input type="text" id="restTime" class="form-control" placeholder="소요 시간"><input type="text" id="restTags" class="form-control" placeholder="해시태그"><label style="font-size: 13px; color:#555;">📋 사진 첨부 (다중 선택 가능)</label><input type="file" id="restPhoto" class="form-control" accept="image/*" multiple><button class="btn btn-primary" style="padding: 14px;" onclick="addRestaurant()">등록 완료</button></div></div></div>
-            <div id="tab-admin-manage" class="tab-content"><div class="card"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap:wrap; gap:10px;"><h2 class="card-title" style="margin:0;">전체 목록 관리</h2><div style="display: flex; gap: 10px; flex-wrap:wrap;"><input type="text" id="adminSearchInput" class="form-control" placeholder="이름으로 검색..." style="width: 180px; padding: 8px; font-size:13px;" onkeyup="filterAdminList()"><button class="btn btn-success" style="padding: 8px 12px; font-size: 13px; white-space:nowrap;" onclick="downloadCSV()">📥 엑셀 백업</button></div></div><div class="table-responsive"><table class="toss-list"><thead><tr><th style="width: 25%;">장소명/카테고리</th><th style="width: 55%;">주소, 좌표, 최초등록일자</th><th style="width: 20%; text-align: center;">제어</th></tr></thead><tbody id="admin-rest-tbody"></tbody></table></div></div></div>
+            <div id="tab-admin-manage" class="tab-content"><div class="card"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap:wrap; gap:10px;"><h2 class="card-title" style="margin:0;">전체 목록 관리</h2><div style="display: flex; gap: 10px; flex-wrap:wrap;"><input type="text" id="adminSearchInput" class="form-control" placeholder="이름으로 검색..." style="width: 180px; padding: 8px; font-size:13px;" onkeyup="filterAdminList()"></div></div><div class="table-responsive"><table class="toss-list"><thead><tr><th style="width: 25%;">장소명/카테고리</th><th style="width: 55%;">주소, 좌표, 최초등록일자</th><th style="width: 20%; text-align: center;">제어</th></tr></thead><tbody id="admin-rest-tbody"></tbody></table></div></div></div>
         </div>
     </div>
 
@@ -406,26 +404,15 @@
     <div class="modal-overlay" id="adminReviewModal"><div class="modal-content" style="max-height:85vh; padding:30px; border-radius:20px;"><div class="info-header" style="padding: 0 0 15px 0; margin-bottom: 15px; border-bottom: 1px solid #eee;"><h2 class="info-title" style="font-size:20px;">리뷰 개별 관리</h2><button class="btn-close-info" onclick="closeAdminReviewModal()" style="display:block; position:absolute; top:25px; right:25px;">×</button></div><div id="adminReviewList" class="review-list-container" style="max-height: 350px;"></div></div></div>
 
     <script>
-        // ★★★ 나스 API 주소 설정 ★★★
-        const API_URL = 'http://220.69.194.145:3000/api';
+        // ★★★ 여기에 복사한 구글 앱 스크립트 웹 앱 URL을 넣으세요 ★★★
+        const API_URL = 'https://script.google.com/macros/s/AKfycbwKS7tLIHLc29QgMEgRT3x0z_qn46aQN-c6xZgslDcEjPqAAIPBS-QPv57ra33pJD90/exec';
 
-        // 전역 상태 변수
-        let restaurants = [];
-        let suggestions = [];
-        let corrections = [];
-        let bookmarks = []; 
-        let map = null;
-        let markers = [];
-        let userMarker = null;
-        let currentInfoRestId = null;
-        let editingRestId = null;
-        let slideRestId = null;
-        let isAdmin = false;
-        let currentPhotoArray = [];
-        let currentPhotoIndex = 0;
+        let restaurants = [], suggestions = [], corrections = [], bookmarks = []; 
+        let map = null, markers = [], userMarker = null;
+        let currentInfoRestId = null, editingRestId = null, slideRestId = null;
+        let isAdmin = false, currentPhotoArray = [], currentPhotoIndex = 0;
         let userLocation = { lat: 36.7696, lng: 126.9314 }; 
 
-        // 유틸 함수
         function getCategoryEmoji(subCategory) { const emojis = { "한식": "🍚", "중식": "🍜", "일식": "🍣", "양식": "🍝", "분식": "🥟", "술집": "🍺", "카페": "☕" }; return emojis[subCategory] || "🍽️"; }
         function getAvgRating(reviews) { if(!reviews || reviews.length === 0) return 0; let sum = reviews.reduce((acc, rev) => acc + (rev.rating || 5), 0); return (sum / reviews.length).toFixed(1); }
         function toggleDarkMode() { document.body.classList.toggle('dark-mode'); const isDark = document.body.classList.contains('dark-mode'); localStorage.setItem('sch_darkmode', isDark); document.getElementById('darkModeBtn').innerText = isDark ? '☀️' : '🌙'; }
@@ -435,28 +422,39 @@
         function getTodayDateStr() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 
         // =====================================
-        // 🔄 DB 통신 로직 (프론트 -> 백엔드 연동 핵심부)
+        // 🔄 구글 API 통신 함수
         // =====================================
-        async function loadDataFromServer() {
-            try {
-                const [resRest, resSug, resCor] = await Promise.all([
-                    fetch(`${API_URL}/restaurants`),
-                    fetch(`${API_URL}/suggestions`),
-                    fetch(`${API_URL}/corrections`)
-                ]);
-                restaurants = await resRest.json();
-                suggestions = await resSug.json();
-                corrections = await resCor.json();
-                updateAppView();
-            } catch (error) {
-                console.error("데이터 불러오기 실패:", error);
-                alert("서버 연결에 실패했습니다. (DB를 확인해주세요)");
+        async function fetchFromGoogle(action, payload = null) {
+            if (!payload) {
+                const res = await fetch(`${API_URL}?action=${action}`);
+                return res.json();
+            } else {
+                // 구글 Apps Script CORS 이슈 방지를 위해 text/plain 전송
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action, payload })
+                });
+                return res.json();
             }
         }
 
-        // =====================================
-        // UI 업데이트 
-        // =====================================
+        async function loadDataFromServer() {
+            try {
+                const res = await fetchFromGoogle('getAllData');
+                if (res.success) {
+                    restaurants = res.restaurants;
+                    suggestions = res.suggestions;
+                    corrections = res.corrections;
+                    updateAppView();
+                } else {
+                    console.error(res.error);
+                }
+            } catch (error) {
+                console.error("데이터 불러오기 실패:", error);
+            }
+        }
+
         function updateAppView() {
             renderDynamicTags(); renderUserList();
             if (isAdmin) { renderAdminDashboard(); renderAdminList(); renderAdminSuggestList(); renderAdminAllReviews(); renderAdminCorrections(); }
@@ -479,11 +477,12 @@
             const photoInput = document.getElementById('suggestPhoto');
             if(!name || !addr) return alert("이름과 주소는 필수입니다.");
             
+            document.body.style.cursor = 'wait'; // 업로드 중 로딩 커서
             const tagsArray = tagsInput.split(' ').filter(t => t.startsWith('#') && t.length > 1);
             processMultipleImages(photoInput.files, async function(photosArray) {
-                const payload = { type, subCategory, name, address: addr, time, tags: tagsArray, photos: photosArray };
-                await fetch(`${API_URL}/suggestions`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+                await fetchFromGoogle('addSuggestion', { type, subCategory, name, address: addr, time, tags: tagsArray, photos: photosArray });
                 alert("제보가 완료되었습니다.");
+                document.body.style.cursor = 'default';
                 ['suggestName', 'suggestAddr', 'suggestTime', 'suggestTags'].forEach(id => document.getElementById(id).value = '');
                 photoInput.value = '';
                 await loadDataFromServer();
@@ -496,22 +495,19 @@
             if(isNaN(lat) || isNaN(lng)) return alert("좌표를 입력해주세요.");
             const item = suggestions.find(s => s.id === id);
             
-            const payload = { type: item.type, subCategory: item.subCategory || '기타', name: item.name, address: item.address, lat, lng, time: item.time, tags: item.tags, photos: item.photos, isPartner: false, partnerBenefit: "", regDate: getTodayDateStr() };
-            
-            await fetch(`${API_URL}/restaurants`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
-            await fetch(`${API_URL}/suggestions/${id}`, { method: 'DELETE' });
+            await fetchFromGoogle('addRestaurant', { type: item.type, subCategory: item.subCategory || '기타', name: item.name, address: item.address, lat, lng, time: item.time, tags: item.tags, photos: item.photos, isPartner: false, partnerBenefit: "", regDate: getTodayDateStr() });
+            await fetchFromGoogle('deleteSuggestion', { id });
             alert("승인 완료"); await loadDataFromServer();
         }
         async function rejectSuggestion(id) {
-            if(confirm("반려하시겠습니까?")) { await fetch(`${API_URL}/suggestions/${id}`, { method: 'DELETE' }); await loadDataFromServer(); }
+            if(confirm("반려하시겠습니까?")) { await fetchFromGoogle('deleteSuggestion', { id }); await loadDataFromServer(); }
         }
 
         // 리뷰 처리
         async function addReviewBase(restId, nickname, text, rating) {
             if(!text) { alert("내용을 입력해주세요."); return false; }
             localStorage.setItem('sch_nickname', nickname);
-            const payload = { restId, nickname, text, rating, date: getTodayDateStr(), timestamp: Date.now() };
-            await fetch(`${API_URL}/reviews`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+            await fetchFromGoogle('addReview', { restId, nickname, text, rating, date: getTodayDateStr(), timestamp: Date.now() });
             await loadDataFromServer();
             return true;
         }
@@ -526,23 +522,22 @@
             if(ok) { document.getElementById('slideNewReview').value = ''; openSlidePanel(slideRestId); }
         }
 
-        async function deleteReviewAdmin(restId, reviewId) { // DB에선 review.id를 넘겨야 함
+        async function deleteReviewAdmin(restId, reviewId) { 
             if(confirm("리뷰를 삭제하시겠습니까?")) {
-                await fetch(`${API_URL}/reviews/${reviewId}`, { method: 'DELETE' });
-                await loadDataFromServer();
-                openAdminReviewModal(restId);
+                await fetchFromGoogle('deleteReview', { id: reviewId });
+                await loadDataFromServer(); openAdminReviewModal(restId);
             }
         }
-        async function deleteReviewFromAll(reviewId) {
+        async function deleteReviewFromAll(restId, reviewId) {
             if(confirm("이 리뷰를 완전히 삭제하시겠습니까?")) {
-                await fetch(`${API_URL}/reviews/${reviewId}`, { method: 'DELETE' });
+                await fetchFromGoogle('deleteReview', { id: reviewId });
                 await loadDataFromServer(); alert("삭제되었습니다.");
             }
         }
 
         // 추천 처리
-        async function increaseLike(id, btnElement) { await fetch(`${API_URL}/restaurants/${id}/like`, { method: 'PUT' }); await loadDataFromServer(); if(btnElement) btnElement.innerHTML = `❤️ 추천 ${restaurants.find(r=>r.id===id).likes}`; }
-        async function increaseLikeFromSlide(id, btnElement) { await fetch(`${API_URL}/restaurants/${id}/like`, { method: 'PUT' }); await loadDataFromServer(); if(btnElement) btnElement.innerText = `❤️ 추천 ${restaurants.find(r=>r.id===id).likes}`; }
+        async function increaseLike(id, btnElement) { await fetchFromGoogle('likeRestaurant', { id }); await loadDataFromServer(); if(btnElement) btnElement.innerHTML = `❤️ 추천 ${restaurants.find(r=>r.id===id).likes}`; }
+        async function increaseLikeFromSlide(id, btnElement) { await fetchFromGoogle('likeRestaurant', { id }); await loadDataFromServer(); if(btnElement) btnElement.innerText = `❤️ 추천 ${restaurants.find(r=>r.id===id).likes}`; }
 
         // 장소 관리
         async function addRestaurant() {
@@ -559,12 +554,12 @@
             const photoInput = document.getElementById('restPhoto');
             
             if(!name || isNaN(lat) || isNaN(lng)) return alert("이름과 좌표는 필수입니다.");
+            
+            document.body.style.cursor = 'wait';
             const tagsArray = tagsInput.split(' ').filter(t => t.startsWith('#') && t.length > 1);
-
             processMultipleImages(photoInput.files, async function(photosArray) {
-                const payload = { type, subCategory, name, address: addr, lat, lng, time, tags: tagsArray, photos: photosArray, isPartner, partnerBenefit, regDate: getTodayDateStr() };
-                await fetch(`${API_URL}/restaurants`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
-                alert("등록 완료");
+                await fetchFromGoogle('addRestaurant', { type, subCategory, name, address: addr, lat, lng, time, tags: tagsArray, photos: photosArray, isPartner, partnerBenefit, regDate: getTodayDateStr() });
+                alert("등록 완료"); document.body.style.cursor = 'default';
                 ['restName', 'restAddr', 'restLat', 'restLng', 'restTime', 'restTags', 'restPhoto', 'restPartnerBenefit'].forEach(id => document.getElementById(id).value = '');
                 document.getElementById('restPartner').checked = false; document.getElementById('restPartnerBenefit').style.display = 'none';
                 await loadDataFromServer();
@@ -586,35 +581,36 @@
             
             if(!name || isNaN(lat) || isNaN(lng)) return alert("이름과 좌표 필수");
 
-            const payload = { type, subCategory, name, address: addr, lat, lng, isPartner, partnerBenefit, regDate, isHidden };
+            document.body.style.cursor = 'wait';
+            const payload = { id, type, subCategory, name, address: addr, lat, lng, isPartner, partnerBenefit, regDate, isHidden };
             if(photoInput.files && photoInput.files[0]) {
                 processMultipleImages(photoInput.files, async function(photos) {
                     payload.photos = photos;
-                    await fetch(`${API_URL}/restaurants/${id}`, { method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
-                    editingRestId = null; await loadDataFromServer(); filterAdminList();
+                    await fetchFromGoogle('updateRestaurant', payload);
+                    editingRestId = null; document.body.style.cursor = 'default'; await loadDataFromServer(); filterAdminList();
                 });
             } else {
-                await fetch(`${API_URL}/restaurants/${id}`, { method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
-                editingRestId = null; await loadDataFromServer(); filterAdminList();
+                await fetchFromGoogle('updateRestaurant', payload);
+                editingRestId = null; document.body.style.cursor = 'default'; await loadDataFromServer(); filterAdminList();
             }
         }
-        async function deleteRestaurant(id) { if(confirm("영구 삭제하시겠습니까?")) { await fetch(`${API_URL}/restaurants/${id}`, { method: 'DELETE' }); await loadDataFromServer(); } }
-        async function toggleHide(id) { const rest = restaurants.find(r=>r.id===id); await fetch(`${API_URL}/restaurants/${id}`, { method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({...rest, isHidden: !rest.isHidden}) }); await loadDataFromServer(); }
+        async function deleteRestaurant(id) { if(confirm("영구 삭제하시겠습니까?")) { await fetchFromGoogle('deleteRestaurant', { id }); await loadDataFromServer(); } }
+        async function toggleHide(id) { const rest = restaurants.find(r=>r.id===id); await fetchFromGoogle('updateRestaurant', { id, isHidden: !rest.isHidden }); await loadDataFromServer(); }
 
-        // 수정 제보 (DB)
+        // 수정 제보
         let correctionTargetId = null;
         function openCorrectionModal(id) { correctionTargetId = id; const rest = restaurants.find(r => r.id === id); document.getElementById('correctionTargetName').innerText = `수정 대상: ${rest.name}`; document.getElementById('correctionInput').value = ''; document.getElementById('correctionModal').classList.add('show'); }
         function closeCorrectionModal() { document.getElementById('correctionModal').classList.remove('show'); }
         async function submitCorrection() {
             const text = document.getElementById('correctionInput').value.trim(); if(!text) return alert('내용을 입력해주세요.');
             const restName = restaurants.find(r => r.id === correctionTargetId).name;
-            await fetch(`${API_URL}/corrections`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({restId: correctionTargetId, restName, content: text, date: getTodayDateStr()}) });
+            await fetchFromGoogle('addCorrection', { restId: correctionTargetId, restName, content: text, date: getTodayDateStr() });
             closeCorrectionModal(); alert('소중한 제보 감사합니다.'); if(isAdmin) loadDataFromServer();
         }
-        async function resolveCorrection(id) { await fetch(`${API_URL}/corrections/${id}`, { method: 'DELETE' }); await loadDataFromServer(); }
+        async function resolveCorrection(id) { await fetchFromGoogle('deleteCorrection', { id }); await loadDataFromServer(); }
 
         // =====================================
-        // 나머지 UI 함수들 (지도, 모달, 리스트 렌더링 등)은 DB와 독립적으로 동작
+        // 나머지 UI 함수들 
         // =====================================
         function renderDynamicTags() { const activeList = restaurants.filter(r => !r.isHidden); let tagCounts = {}; activeList.forEach(r => r.tags.forEach(t => tagCounts[t] = (tagCounts[t] || 0) + 1)); const sortedTags = Object.keys(tagCounts).sort((a, b) => tagCounts[b] - tagCounts[a]).slice(0, 5); const container = document.getElementById('dynamicTagsArea'); if(!container) return; let html = `<span class="chip" onclick="quickFilter('식당')">🍽️ 식당만</span><span class="chip" onclick="quickFilter('카페')">☕ 카페만</span><span class="chip" onclick="quickFilter('협약')">🤝 협약업체</span>`; sortedTags.forEach(t => { html += `<span class="chip" onclick="quickFilter('${t}')">${t}</span>`; }); container.innerHTML = html; }
         function processMultipleImages(files, callback) { if(!files || files.length === 0) return callback([]); let promises = Array.from(files).map(file => { return new Promise(resolve => { const reader = new FileReader(); reader.readAsDataURL(file); reader.onload = function(event) { const img = new Image(); img.src = event.target.result; img.onload = function() { const canvas = document.createElement('canvas'); let width = img.width, height = img.height; if (width > height) { if (width > 800) { height *= 800 / width; width = 800; } } else { if (height > 800) { width *= 800 / height; height = 800; } } canvas.width = width; canvas.height = height; canvas.getContext('2d').drawImage(img, 0, 0, width, height); resolve(canvas.toDataURL('image/jpeg', 0.7)); } } }); }); Promise.all(promises).then(callback); }
@@ -656,7 +652,7 @@
         function renderUserList() { const tbody = document.getElementById('user-list-tbody'); if(!tbody) return; let list = [...restaurants].filter(r => !r.isHidden); const filterBookmark = document.getElementById('filterBookmark'); if (filterBookmark && filterBookmark.checked) { list = list.filter(r => bookmarks.includes(r.id)); } const sortType = document.getElementById('listSort') ? document.getElementById('listSort').value : 'likes'; list.forEach(r => { r.dist = getDistance(userLocation.lat, userLocation.lng, r.lat, r.lng); }); list.sort((a, b) => { if (sortType === 'likes') return b.likes - a.likes; if (sortType === 'rating') return getAvgRating(b.reviews) - getAvgRating(a.reviews); if (sortType === 'distance') return a.dist - b.dist; if (sortType === 'recent') return new Date(b.regDate) - new Date(a.regDate); return 0; }); if(list.length === 0) { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:30px; color:#999;">표시할 데이터가 없습니다.</td></tr>`; return; } tbody.innerHTML = list.map(r => { let badge = r.type === 'cafe' ? `<span class="type-badge bg-cafe" style="font-size:10px;">${r.subCategory || '카페'}</span>` : `<span class="type-badge bg-rest" style="font-size:10px;">${r.subCategory || '기타'}</span>`; let partner = r.isPartner ? `<span class="type-badge bg-partner" style="font-size:10px;">🤝 협약</span>` : ``; let avgRating = getAvgRating(r.reviews); let ratingHtml = avgRating > 0 ? `<span style="color:#FFD700; font-size:12px; font-weight:bold;">⭐ ${avgRating}</span>` : ''; let isBookmarked = bookmarks.includes(r.id); let bookmarkIcon = isBookmarked ? `<span style="color:var(--bookmark-color); font-size:14px;">⭐</span>` : ''; let distStr = r.dist < 1 ? Math.round(r.dist*1000) + 'm' : r.dist.toFixed(1) + 'km'; return `<tr onmouseenter="highlightMarker(${r.id})" onmouseleave="unhighlightMarker(${r.id})"><td><div class="item-title" style="cursor:pointer;" onclick="openFromList(${r.id})">${badge} ${bookmarkIcon} ${r.name} ${partner} <br>${ratingHtml}</div></td><td><div class="item-sub" style="font-size:14px;">${r.address || '-'}</div></td><td><div style="margin-bottom:4px;">${r.tags.slice(0,2).map(t => `<span class="tag-badge">${t}</span>`).join('')}</div><span style="font-size:12px; color:#666;">🚶 약 ${distStr}</span></td><td style="text-align: center;"><div class="like-btn" onclick="openSlidePanel(${r.id})">❤️ ${r.likes}</div></td></tr>`; }).join(''); }
         function openFromList(id) { switchTab('tab-home', document.querySelectorAll('.nav-item')[1]); selectRestaurant(id); }
 
-        function openSlidePanel(id) { const rest = restaurants.find(r => r.id === id); if(!rest) return; slideRestId = id; let iconStr = getCategoryEmoji(rest.subCategory); let avgRating = getAvgRating(rest.reviews); let ratingHtml = avgRating > 0 ? `<span style="color:#FFD700; font-size:14px; margin-left:5px;">⭐ ${avgRating}</span>` : ''; document.getElementById('slideTitle').innerHTML = `${iconStr} ${rest.name} ${ratingHtml}`; document.getElementById('slideRegDate').innerText = rest.regDate; const slideLikeBtn = document.getElementById('slideLikeBtn'); slideLikeBtn.innerText = `❤️ 추천 ${rest.likes}`; slideLikeBtn.onclick = function() { increaseLikeFromSlide(rest.id, slideLikeBtn); }; updateBookmarkButtons(rest.id); document.getElementById('slideNearbyCrossArea').innerHTML = generateCrossSuggestHtml(rest.lat, rest.lng, rest.type); renderThumbnail(rest, 'slideMenuPhoto'); renderSlideReviews(); const overlay = document.getElementById('slideOverlay'); overlay.style.display = 'block'; setTimeout(() => { document.getElementById('slidePanel').classList.add('open'); }, 10); }
+        function openSlidePanel(id) { const rest = restaurants.find(r => r.id === id); if(!rest) return; slideRestId = id; let iconStr = getCategoryEmoji(rest.subCategory); let avgRating = getAvgRating(rest.reviews); let ratingHtml = avgRating > 0 ? `<span style="color:#FFD700; font-size:14px; margin-left:5px;">⭐ ${avgRating}</span>` : ''; document.getElementById('slideTitle').innerHTML = `${iconStr} ${rest.name} ${ratingHtml}`; document.getElementById('slideRegDate').innerText = rest.regDate; const slideLikeBtn = document.getElementById('slideLikeBtn'); slideLikeBtn.innerText = `❤️ 추천하기 ${rest.likes}`; slideLikeBtn.onclick = function() { increaseLikeFromSlide(rest.id, slideLikeBtn); }; updateBookmarkButtons(rest.id); document.getElementById('slideNearbyCrossArea').innerHTML = generateCrossSuggestHtml(rest.lat, rest.lng, rest.type); renderThumbnail(rest, 'slideMenuPhoto'); renderSlideReviews(); const overlay = document.getElementById('slideOverlay'); overlay.style.display = 'block'; setTimeout(() => { document.getElementById('slidePanel').classList.add('open'); }, 10); }
         function closeSlidePanel() { document.getElementById('slidePanel').classList.remove('open'); setTimeout(() => { document.getElementById('slideOverlay').style.display = 'none'; }, 300); }
         function renderSlideReviews() { const rest = restaurants.find(r => r.id === slideRestId); const container = document.getElementById('slideReviews'); container.innerHTML = ''; if(!rest.reviews || rest.reviews.length === 0) { container.innerHTML = '<div style="color:#999; font-size:14px; text-align:center; padding:20px;">첫 리뷰를 남겨주세요!</div>'; return; } rest.reviews.forEach(rev => { let stars = '⭐'.repeat(rev.rating || 5); container.innerHTML += `<div class="review-box"><div class="review-meta"><span>${rev.date} · ${rev.nickname || '익명'}</span><span class="review-rating">${stars}</span></div><div class="review-text">${rev.text}</div></div>`; }); }
 
@@ -665,7 +661,7 @@
 
         function renderAdminDashboard() { if(!document.getElementById('statTotal')) return; document.getElementById('statTotal').innerText = restaurants.length; let totalReviews = 0; restaurants.forEach(r => { if(r.reviews) totalReviews += r.reviews.length; }); document.getElementById('statReviews').innerText = totalReviews; document.getElementById('statSuggest').innerText = suggestions.length + corrections.length; }
 
-        function renderAdminAllReviews() { const tbody = document.getElementById('admin-all-reviews-tbody'); if(!tbody) return; let allReviews = []; restaurants.forEach(rest => { if(rest.reviews) { rest.reviews.forEach((rev) => { allReviews.push({ restId: rest.id, restName: rest.name, reviewId: rev.id, text: rev.text, date: rev.date, nickname: rev.nickname || '익명', timestamp: rev.timestamp || 0, rating: rev.rating || 5 }); }); } }); allReviews.sort((a, b) => b.timestamp - a.timestamp); if(allReviews.length === 0) { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:30px;">작성된 리뷰가 없습니다.</td></tr>`; return; } tbody.innerHTML = allReviews.map(r => `<tr><td><strong style="color:var(--primary); font-size:14px;">${r.restName}</strong></td><td style="font-size:12px; color:#555;">${r.nickname}<br><span style="color:#999; font-size:11px;">${r.date}</span><br><span style="color:#FFD700;">${'⭐'.repeat(r.rating)}</span></td><td style="font-size:13px; line-height:1.4;">${r.text}</td><td style="text-align:center;"><button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="deleteReviewFromAll(${r.reviewId})">삭제</button></td></tr>`).join(''); }
+        function renderAdminAllReviews() { const tbody = document.getElementById('admin-all-reviews-tbody'); if(!tbody) return; let allReviews = []; restaurants.forEach(rest => { if(rest.reviews) { rest.reviews.forEach((rev) => { allReviews.push({ restId: rest.id, restName: rest.name, reviewId: rev.id, text: rev.text, date: rev.date, nickname: rev.nickname || '익명', timestamp: rev.timestamp || 0, rating: rev.rating || 5 }); }); } }); allReviews.sort((a, b) => b.timestamp - a.timestamp); if(allReviews.length === 0) { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:30px;">작성된 리뷰가 없습니다.</td></tr>`; return; } tbody.innerHTML = allReviews.map(r => `<tr><td><strong style="color:var(--primary); font-size:14px;">${r.restName}</strong></td><td style="font-size:12px; color:#555;">${r.nickname}<br><span style="color:#999; font-size:11px;">${r.date}</span><br><span style="color:#FFD700;">${'⭐'.repeat(r.rating)}</span></td><td style="font-size:13px; line-height:1.4;">${r.text}</td><td style="text-align:center;"><button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="deleteReviewFromAll(${r.restId}, ${r.reviewId})">삭제</button></td></tr>`).join(''); }
         
         function renderAdminSuggestList() { const tbody = document.getElementById('admin-suggest-tbody'); if(!tbody) return; if(suggestions.length === 0) { tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; padding:25px; color:#999;">보관함이 비어있습니다.</td></tr>`; return; } tbody.innerHTML = suggestions.map(s => { const isDup = restaurants.some(r => r.name.includes(s.name) || s.name.includes(r.name)); const badge = `<span class="type-badge ${s.type==='cafe'?'bg-cafe':'bg-rest'}">${s.subCategory || '기타'}</span>`; return `<tr><td><div style="margin-bottom:4px;">${badge} <strong>${s.name}</strong> ${isDup ? '<span style="color:#FA5252; font-size:12px; font-weight:700;">⚠️ 중복의심</span>' : ''}</div><div style="font-size:14px; color:var(--text-muted);">${s.address}</div></td><td><div style="margin-bottom:6px;">${s.tags.map(t => `<span class="tag-badge" style="background:#FFEAA7; color:#333;">${t}</span>`).join('')}</div></td><td><div style="display:flex; flex-direction:column; gap:6px;"><div style="display:flex; gap:4px;"><input type="text" id="approveLat_${s.id}" class="form-control" placeholder="위도" style="padding:6px; font-size:12px; height:30px;"><input type="text" id="approveLng_${s.id}" class="form-control" placeholder="경도" style="padding:6px; font-size:12px; height:30px;"></div><div class="btn-group-equal"><button class="btn btn-success" style="padding:4px 6px; font-size:12px;" onclick="approveSuggestion(${s.id})">승인</button><button class="btn btn-danger" style="padding:4px 6px; font-size:12px;" onclick="rejectSuggestion(${s.id})">반려</button></div></div></td></tr>`; }).join(''); }
         
@@ -694,7 +690,6 @@
                     if(el1) el1.value = savedNick; if(el2) el2.value = savedNick;
                 }
 
-                // 나스 API에서 데이터를 불러옵니다.
                 await loadDataFromServer();
 
                 const urlParams = new URLSearchParams(window.location.search);
