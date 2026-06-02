@@ -356,7 +356,7 @@
                 </div>
             </div>
 
-            <div id="tab-admin-login" class="tab-content"><div class="card" style="text-align: center; padding: 60px 20px; max-width: 400px; margin: 50px auto;"><h2 class="card-title" style="border:none;">관리자 인증</h2><div class="form-group"><input type="password" id="adminPassword" class="form-control" placeholder="비밀번호(1234)" style="text-align: center;" onkeypress="if(event.keyCode===13) checkAdminPassword()"><button class="btn btn-primary" onclick="checkAdminPassword()">로그인</button></div></div></div>
+            <div id="tab-admin-login" class="tab-content"><div class="card" style="text-align: center; padding: 60px 20px; max-width: 400px; margin: 50px auto;"><h2 class="card-title" style="border:none;">관리자 인증</h2><div class="form-group"><input type="password" id="adminPassword" class="form-control" placeholder="비밀번호를 입력하세" style="text-align: center;" onkeypress="if(event.keyCode===13) checkAdminPassword()"><button class="btn btn-primary" onclick="checkAdminPassword()">로그인</button></div></div></div>
             <div id="tab-admin-dashboard" class="tab-content">
                 <div class="card">
                     <h2 class="card-title">📊 관리자 대시보드</h2>
@@ -657,7 +657,30 @@
         function renderSlideReviews() { const rest = restaurants.find(r => r.id === slideRestId); const container = document.getElementById('slideReviews'); container.innerHTML = ''; if(!rest.reviews || rest.reviews.length === 0) { container.innerHTML = '<div style="color:#999; font-size:14px; text-align:center; padding:20px;">첫 리뷰를 남겨주세요!</div>'; return; } rest.reviews.forEach(rev => { let stars = '⭐'.repeat(rev.rating || 5); container.innerHTML += `<div class="review-box"><div class="review-meta"><span>${rev.date} · ${rev.nickname || '익명'}</span><span class="review-rating">${stars}</span></div><div class="review-text">${rev.text}</div></div>`; }); }
 
         function togglePartnerInput(mode) { const checkbox = document.getElementById(mode === 'add' ? 'restPartner' : 'editPartner'); const input = document.getElementById(mode === 'add' ? 'restPartnerBenefit' : 'editPartnerBenefit'); if(input) input.style.display = checkbox.checked ? 'block' : 'none'; }
-        function checkAdminPassword() { if(document.getElementById('adminPassword').value === "1234") { isAdmin = true; document.getElementById('btnAdminLogin').style.display = 'none'; document.getElementById('adminMenuGroup').style.display = 'flex'; const modeText = document.getElementById('modeText'); modeText.innerText = '⚙️ 관리자 모드 ▼'; const indicator = document.getElementById('modeIndicator'); indicator.style.background = '#FFF5F5'; indicator.style.color = '#FA5252'; switchTab('tab-admin-dashboard', document.querySelectorAll('.admin-nav-item')[0]); updateAppView(); } else alert("비밀번호가 틀렸습니다."); }
+        async function checkAdminPassword() {
+            const pwdInput = document.getElementById('adminPassword').value;
+            
+            // 프론트엔드에서 비밀번호를 직접 확인하지 않고, 구글 서버로 물어봅니다!
+            const res = await fetchFromGoogle('adminLogin', { password: pwdInput });
+
+            if(res.success) {
+                isAdmin = true;
+                document.getElementById('btnAdminLogin').style.display = 'none'; 
+                document.getElementById('adminMenuGroup').style.display = 'flex'; 
+                const modeText = document.getElementById('modeText');
+                modeText.innerText = '⚙️ 관리자 모드 ▼'; 
+                const indicator = document.getElementById('modeIndicator');
+                indicator.style.background = '#FFF5F5'; 
+                indicator.style.color = '#FA5252';
+                switchTab('tab-admin-dashboard', document.querySelectorAll('.admin-nav-item')[0]); 
+                updateAppView();
+                
+                // 로그인 성공 후 비밀번호 입력창 비워주기
+                document.getElementById('adminPassword').value = '';
+            } else {
+                alert("비밀번호가 틀렸습니다.");
+            }
+        }
 
         function renderAdminDashboard() { if(!document.getElementById('statTotal')) return; document.getElementById('statTotal').innerText = restaurants.length; let totalReviews = 0; restaurants.forEach(r => { if(r.reviews) totalReviews += r.reviews.length; }); document.getElementById('statReviews').innerText = totalReviews; document.getElementById('statSuggest').innerText = suggestions.length + corrections.length; }
 
