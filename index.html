@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MealofSCH - 순천향대 점심 플랫폼</title>
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
+    
     <script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=mlxyqndqs3"></script>
 
     <style>
@@ -16,7 +17,6 @@
         
         body { font-family: 'Pretendard', sans-serif; background-color: var(--bg-color); margin: 0; color: var(--text-main); overflow: hidden; display: flex; height: 100vh; }
 
-        /* 사이드바 */
         .sidebar { width: var(--sidebar-width); height: 100vh; background-color: var(--sidebar-bg); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; transition: width 0.3s cubic-bezier(0.25, 0.1, 0.25, 1); flex-shrink: 0; z-index: 2000; overflow: hidden; }
         .sidebar.collapsed { width: var(--sidebar-mini); }
         
@@ -61,7 +61,6 @@
         .admin-menu-group { display: none; flex-direction: column; gap: 8px; margin-top: 10px; border-top: 1px dashed var(--border-color); padding-top: 10px; width: 100%; }
         .sidebar.collapsed .admin-menu-group { width: auto; }
 
-        /* 메인 영역 */
         .main-wrapper { flex: 1; display: flex; flex-direction: column; height: 100vh; position: relative; width: 100%; min-width: 0; }
         .topbar { background-color: var(--card-bg); height: 60px; display: flex; align-items: center; justify-content: flex-end; padding: 0 20px; border-bottom: 1px solid var(--border-color); z-index: 50; flex-shrink: 0; }
         
@@ -75,7 +74,6 @@
         .tab-content.active { display: flex; flex-direction: column; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* 스플릿 뷰 & GPS 버튼 */
         .split-layout { display: flex; gap: 20px; height: 100%; width: 100%; }
         .map-section { flex: 2; display: flex; flex-direction: column; min-width: 0; height: 100%; gap: 15px; position: relative; }
         
@@ -100,7 +98,6 @@
 
         #map { width: 100%; flex: 1; border-radius: 16px; border: 1px solid var(--border-color); position: relative; z-index: 1; background: #e9ecef; display: flex; align-items: center; justify-content: center; }
 
-        /* 정보 패널 */
         .info-section { flex: 1; min-width: 380px; background: var(--card-bg); border-radius: 16px; border: 1px solid var(--border-color); display: flex; flex-direction: column; overflow: hidden; height: 100%; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
         #infoPlaceholder { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #999; font-size: 15px; font-weight: 500; background: #fafbfc; }
         #infoContent { display: none; flex-direction: column; height: 100%; }
@@ -185,7 +182,6 @@
         .photo-container img { width: 100%; border-radius: 12px; border: 1px solid #eee; margin-top: 5px; object-fit: cover; max-height: 220px; background-color: #f8f9fa; }
         .empty-photo { background: #f8f9fa; color: #adb5bd; padding: 30px 0; text-align: center; border-radius: 12px; font-size: 13px; border: 1px dashed #ced4da; }
 
-        /* 모바일 대응 */
         @media (max-width: 768px) {
             .sidebar { position: absolute; height: 100vh; z-index: 2000; box-shadow: 5px 0 15px rgba(0,0,0,0.1); width: 280px; }
             .sidebar.collapsed { width: 0; border: none; box-shadow: none; padding-bottom: 0; }
@@ -200,14 +196,12 @@
             .btn-gps { display: flex; bottom: 10px; right: 10px; } 
         }
 
-        /* 에러 표시용 배너 */
         #globalErrorBanner { display:none; position:fixed; top:0; left:0; width:100%; background:#FA5252; color:white; padding:10px; text-align:center; z-index:9999; font-size:14px; font-weight:bold; }
     </style>
 </head>
 <body>
     <div id="globalErrorBanner">치명적인 에러가 발생했습니다. 시스템이 멈출 수 있습니다.</div>
 
-    <!-- 좌측 사이드바 -->
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <div class="logo" onclick="goToHome()">
@@ -259,7 +253,6 @@
         </div>
     </nav>
 
-    <!-- 우측 메인 영역 -->
     <div class="main-wrapper">
         <header class="topbar">
             <div class="mode-indicator" id="modeIndicator" onclick="toggleAdminDropdown()">
@@ -272,7 +265,6 @@
 
         <div class="content-container">
             
-            <!-- 탭 1: 지도/검색 뷰 -->
             <div id="tab-home" class="tab-content active" style="max-width: none; padding:0;">
                 <div class="split-layout">
                     <div class="map-section">
@@ -285,14 +277,13 @@
                         </div>
                         <div id="map">
                             <div style="color:#999; font-size:14px; text-align:center; padding-top:40%;">
-                                지도 서버 대기 중...<br>
+                                지도 로딩 중...<br>
                                 <span style="font-size:12px;">(기능은 즉시 작동합니다)</span>
                             </div>
                         </div>
                         <button class="btn-gps" onclick="moveToCurrentLocation()" title="내 위치로 이동">🎯</button>
                     </div>
                     
-                    <!-- 우측 정보 패널 -->
                     <div class="info-section" id="infoPanel">
                         <div id="infoPlaceholder">
                             <div style="font-size: 40px; margin-bottom: 15px;">👈</div>
@@ -305,20 +296,17 @@
                                 <button class="btn-close-info" onclick="closeInfoPanel()">×</button>
                             </div>
                             <div class="info-body">
-                                <!-- 1. 메뉴/사진 -->
+                                
                                 <div style="font-size: 15px; font-weight: 700; margin: 0 0 5px; flex-shrink:0; display:flex; justify-content: space-between; align-items: center; width: 100%;">
                                     <span>📋 메뉴 및 사진</span> 
                                     <span style="font-size:12px; color:var(--text-muted); font-weight:normal;">기준일자: <span id="infoRegDate"></span></span>
                                 </div>
                                 <div class="photo-container" id="infoMenuPhoto" style="flex-shrink:0; margin-bottom:10px;"></div>
                                 
-                                <!-- 2. 해시태그 -->
                                 <div id="infoTagsArea" style="margin-bottom:15px; flex-shrink:0;"></div>
                                 
-                                <!-- 3. 주소/메타 -->
                                 <div id="infoMetaArea" style="margin-bottom:15px; font-size:15px; color:var(--text-main); line-height: 1.6; flex-shrink:0;"></div>
                                 
-                                <!-- 4. 액션 버튼 -->
                                 <div class="btn-group-equal" style="margin-bottom: 15px; flex-shrink:0;">
                                     <button class="btn btn-edit" id="infoLikeBtn" style="background:#FFF5F5; color:#FA5252;">❤️ 추천</button>
                                     <button class="btn btn-fav" id="infoFavBtn" onclick="toggleFavorite(currentInfoRestId, this)">⭐ 찜하기</button>
@@ -332,7 +320,6 @@
 
                                 <div id="nearbyCrossArea" style="flex-shrink:0;"></div>
                                 
-                                <!-- 5. 리뷰 -->
                                 <div style="font-size: 15px; font-weight: 700; margin: 15px 0 5px; flex-shrink:0;">💬 교직원 리뷰</div>
                                 <div class="review-list-container" id="infoReviews"></div>
                                 
@@ -354,7 +341,6 @@
                 </div>
             </div>
 
-            <!-- 탭 2: 전체 목록 -->
             <div id="tab-list" class="tab-content">
                 <div class="card">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap:wrap; gap:10px;">
@@ -374,7 +360,6 @@
                 </div>
             </div>
 
-            <!-- 탭 3: 식당 제보 -->
             <div id="tab-suggest" class="tab-content">
                 <div class="card">
                     <h2 class="card-title">신규 장소 및 정보 수정 제보</h2>
@@ -406,7 +391,6 @@
                 </div>
             </div>
 
-            <!-- 탭 4: 관리자 로그인 -->
             <div id="tab-admin-login" class="tab-content">
                 <div class="card" style="text-align: center; padding: 60px 20px; max-width: 400px; margin: 50px auto;">
                     <h2 class="card-title" style="border:none;">관리자 인증</h2>
@@ -417,7 +401,6 @@
                 </div>
             </div>
 
-            <!-- 탭 5: 리뷰 통합 관리 -->
             <div id="tab-admin-reviews" class="tab-content">
                 <div class="card">
                     <h2 class="card-title">💬 전체 리뷰 통합 관리 (최신순)</h2>
@@ -430,7 +413,6 @@
                 </div>
             </div>
 
-            <!-- 탭 6: 제보함 -->
             <div id="tab-admin-suggest" class="tab-content">
                 <div class="card" style="background-color: #FFFDF4; border-color: #FFEAA7;">
                     <h2 class="card-title" style="color: #D39E00;">📥 건의 제보함</h2>
@@ -443,7 +425,6 @@
                 </div>
             </div>
 
-            <!-- 탭 7: 신규 등록 -->
             <div id="tab-admin-add" class="tab-content">
                 <div class="card">
                     <h2 class="card-title">신규 장소 직접 등록</h2>
@@ -483,7 +464,6 @@
                 </div>
             </div>
 
-            <!-- 탭 8: 목록 관리 -->
             <div id="tab-admin-manage" class="tab-content">
                 <div class="card">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap:wrap; gap:10px;">
@@ -505,7 +485,6 @@
         </div>
     </div>
 
-    <!-- 우측 리뷰 슬라이드 창 -->
     <div class="slide-overlay" id="slideOverlay" onclick="closeSlidePanel()"></div>
     <div class="slide-panel" id="slidePanel">
         <div class="info-header">
@@ -514,20 +493,16 @@
         </div>
         <div class="info-body" style="display: flex; flex-direction: column; height: 100%;">
             
-            <!-- 1. 메뉴 및 사진 -->
             <div style="font-size: 15px; font-weight: 700; margin: 0 0 5px; flex-shrink:0; display:flex; justify-content: space-between; align-items: center; width: 100%;">
                 <span>📋 메뉴 및 사진</span> 
                 <span style="font-size:12px; color:var(--text-muted); font-weight:normal;">기준일자: <span id="slideRegDate"></span></span>
             </div>
             <div class="photo-container" id="slideMenuPhoto" style="margin-bottom: 10px; flex-shrink:0;"></div>
             
-            <!-- 2. 해시태그 -->
             <div id="slideTagsArea" style="margin-bottom:15px; flex-shrink:0;"></div>
             
-            <!-- 3. 주소 및 메타 -->
             <div id="slideMetaArea" style="margin-bottom:15px; font-size:14px; color:var(--text-main); line-height: 1.6; flex-shrink:0;"></div>
             
-            <!-- 4. 액션 버튼 -->
             <div class="btn-group-equal" style="margin-bottom: 20px; flex-shrink:0;">
                 <button class="btn btn-edit" id="slideLikeBtn" style="background:#FFF5F5; color:#FA5252;">❤️ 추천</button>
                 <button class="btn btn-fav" id="slideFavBtn" onclick="toggleFavorite(slideRestId, this)">⭐ 찜하기</button>
@@ -541,7 +516,6 @@
 
             <div id="slideNearbyCrossArea" style="flex-shrink:0;"></div>
             
-            <!-- 5. 리뷰 -->
             <div style="font-size: 15px; font-weight: 700; margin: 10px 0 5px; flex-shrink:0;">💬 교직원 리뷰</div>
             <div class="review-list-container" id="slideReviews"></div>
             
@@ -560,7 +534,6 @@
         </div>
     </div>
 
-    <!-- 다중 사진 뷰어 모달 -->
     <div class="modal-overlay" id="photoViewerModal">
         <div class="modal-content" id="photoViewerModalContent">
             <span onclick="closePhotoModal()" style="color:white; align-self:flex-end; font-size:36px; display:block; margin-bottom:10px; cursor:pointer; font-weight:bold; line-height:1;">&times;</span>
@@ -573,7 +546,6 @@
         </div>
     </div>
 
-    <!-- 관리자 리뷰 개별 삭제 모달 -->
     <div class="modal-overlay" id="adminReviewModal">
         <div class="modal-content" style="background:#fff; max-height:85vh; padding:30px; border-radius:20px;">
             <div class="info-header" style="padding: 0 0 15px 0; margin-bottom: 15px; border-bottom: 1px solid #eee;">
@@ -584,7 +556,6 @@
         </div>
     </div>
 
-    <!-- 🚨 모든 기능을 안전한 전통적 방식(Global)으로 선언하여 클릭 먹통 원천 차단 -->
     <script>
         window.onerror = function(msg, url, lineNo, columnNo, error) {
             let banner = document.getElementById('globalErrorBanner');
@@ -596,7 +567,6 @@
             return false;
         };
 
-        // 전역 상태 변수
         let restaurants = [];
         let suggestions = [];
         let favorites = []; 
@@ -635,9 +605,9 @@
             } catch(e) { return defaultVal; }
         }
 
-        function saveMasterDataSilent() { localStorage.setItem('sch_master_v19_3', JSON.stringify(restaurants)); }
+        window.saveMasterDataSilent = function() { localStorage.setItem('sch_master_v20', JSON.stringify(restaurants)); };
         
-        function updateAppView() {
+        window.updateAppView = function() {
             renderDynamicTags();
             renderUserList();
             if (isAdmin) { 
@@ -657,9 +627,9 @@
                     drawMarkers(activeList); 
                 } 
             } catch(e) {}
-        }
+        };
 
-        function toggleFavorite(id, btnElement) {
+        window.toggleFavorite = function(id, btnElement) {
             const index = favorites.indexOf(id);
             if (index > -1) {
                 favorites.splice(index, 1);
@@ -670,9 +640,9 @@
             }
             localStorage.setItem('sch_favorites', JSON.stringify(favorites));
             updateAppView(); 
-        }
+        };
 
-        function renderDynamicTags() {
+        window.renderDynamicTags = function() {
             const activeList = restaurants.filter(r => !r.isHidden);
             let tagCounts = {};
             activeList.forEach(r => r.tags.forEach(t => tagCounts[t] = (tagCounts[t] || 0) + 1));
@@ -687,20 +657,20 @@
                         <span class="chip" onclick="quickFilter('협약')">🤝 협약업체</span>`;
             sortedTags.forEach(t => { html += `<span class="chip" onclick="quickFilter('${t}')">${t}</span>`; });
             container.innerHTML = html;
-        }
+        };
 
-        function toggleFavFilter() {
+        window.toggleFavFilter = function() {
             isFavFilterActive = !isFavFilterActive;
             updateAppView();
-        }
+        };
 
-        function getDistance(lat1, lon1, lat2, lon2) {
+        window.getDistance = function(lat1, lon1, lat2, lon2) {
             const R = 6371; const dLat = (lat2-lat1) * Math.PI / 180; const dLon = (lon2-lon1) * Math.PI / 180;
             const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
             return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-        }
+        };
 
-        function processMultipleImages(files, callback) {
+        window.processMultipleImages = function(files, callback) {
             if(!files || files.length === 0) return callback([]);
             let promises = Array.from(files).map(file => {
                 return new Promise(resolve => {
@@ -720,30 +690,26 @@
                 });
             });
             Promise.all(promises).then(callback);
-        }
+        };
 
-        function copyAddressOnly() {
+        window.copyAddressOnly = function() {
             const rest = restaurants.find(r => r.id === currentInfoRestId); if(!rest) return;
             if(!rest.address) return alert("등록된 주소가 없습니다.");
             copyText(rest.address);
-        }
+        };
 
-        function copyText(text) {
+        window.copyText = function(text) {
             navigator.clipboard.writeText(text).then(() => alert("복사되었습니다. 📋")).catch(() => {
                 const tempInput = document.createElement("input"); tempInput.value = text; document.body.appendChild(tempInput); tempInput.select(); document.execCommand("copy"); document.body.removeChild(tempInput);
                 alert("복사되었습니다. 📋");
             });
-        }
+        };
 
-        function shareRestaurantInfo(id = currentInfoRestId) {
+        window.shareRestaurantInfo = function(id = currentInfoRestId) {
             const rest = restaurants.find(r => r.id === id);
             if(!rest) return;
             
-            const shareText = `[MealofSCH 추천]
-🍽️ ${rest.name}
-📍 주소: ${rest.address || '정보 없음'}
-⭐ 평점: ${getAvgRating(rest.reviews)}
-🚗 길찾기: https://map.naver.com/index.naver?elat=${rest.lat}&elng=${rest.lng}&etext=${encodeURIComponent(rest.name)}&menu=route`;
+            const shareText = `[MealofSCH 추천]\n🍽️ ${rest.name}\n📍 주소: ${rest.address || '정보 없음'}\n⭐ 평점: ${getAvgRating(rest.reviews)}\n🚗 길찾기: https://map.naver.com/index.naver?elat=${rest.lat}&elng=${rest.lng}&etext=${encodeURIComponent(rest.name)}&menu=route`;
             
             if (navigator.share) {
                 navigator.share({ title: `MealofSCH: ${rest.name}`, text: shareText }).catch(console.error);
@@ -751,9 +717,9 @@
                 copyText(shareText);
                 alert("공유 정보가 클립보드에 복사되었습니다. 카카오톡 등에 붙여넣기 하세요! 📋");
             }
-        }
+        };
 
-        function suggestInfoEdit(id = currentInfoRestId) {
+        window.suggestInfoEdit = function(id = currentInfoRestId) {
             const rest = restaurants.find(r => r.id === id);
             if(!rest) return;
             
@@ -769,9 +735,9 @@
             document.getElementById('suggestTags').value = rest.tags.join(' ');
             
             alert("수정하실 최신 정보를 입력 후 제보 버튼을 눌러주세요!");
-        }
+        };
 
-        function moveToCurrentLocation() {
+        window.moveToCurrentLocation = function() {
             if (!navigator.geolocation) return alert("현재 브라우저에서는 위치 정보를 지원하지 않습니다.");
             const btn = document.querySelector('.btn-gps');
             if(btn) btn.style.opacity = '0.5';
@@ -794,9 +760,9 @@
                 },
                 { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
             );
-        }
+        };
 
-        function openNaverRoute(id = currentInfoRestId) {
+        window.openNaverRoute = function(id = currentInfoRestId) {
             const rest = restaurants.find(r => r.id === id);
             if(!rest) return;
             if (navigator.geolocation) {
@@ -819,41 +785,41 @@
                 const url = `https://map.naver.com/index.naver?elat=${rest.lat}&elng=${rest.lng}&etext=${encodeURIComponent(rest.name)}&menu=route`;
                 window.open(url, '_blank');
             }
-        }
+        };
 
-        function getTodayDateStr() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+        window.getTodayDateStr = function() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
 
-        function toggleSidebar() {
+        window.toggleSidebar = function() {
             const sidebar = document.getElementById('sidebar'); 
             const toggleBtn = document.getElementById('toggleBtn');
             sidebar.classList.toggle('collapsed');
             toggleBtn.innerHTML = sidebar.classList.contains('collapsed') ? "❯❯" : "❮❮";
             setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 300);
-        }
+        };
         
-        function switchTab(tabId, el) {
+        window.switchTab = function(tabId, el) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
             if(el) el.classList.add('active');
             if (window.innerWidth <= 768 && tabId !== 'tab-home') { document.getElementById('sidebar').classList.add('collapsed'); }
             if (tabId === 'tab-home' && map) setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 100);
-        }
+        };
         
-        function goToHome() {
+        window.goToHome = function() {
             switchTab('tab-home', document.querySelectorAll('.nav-item')[1]);
             document.getElementById('searchInput').value = ''; document.getElementById('searchResults').style.display = 'none';
             try { if(typeof naver !== 'undefined' && map) map.morph(new naver.maps.LatLng(36.7696, 126.9314), 15); } catch(e){}
             closeInfoPanel(); updateAppView();
-        }
+        };
 
-        function toggleAdminDropdown() {
+        window.toggleAdminDropdown = function() {
             if(!isAdmin) return;
             const dropdown = document.getElementById('adminDropdown');
             dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-        }
+        };
         
-        function logoutAdmin(e) {
+        window.logoutAdmin = function(e) {
             e.stopPropagation();
             isAdmin = false;
             document.getElementById('adminDropdown').style.display = 'none';
@@ -861,7 +827,7 @@
             const indicator = document.getElementById('modeIndicator');
             indicator.innerHTML = '👤 사용자 모드 ▼'; indicator.style.background = '#E9ECEF'; indicator.style.color = '#495057';
             goToHome();
-        }
+        };
 
         document.addEventListener('click', function(e) { 
             if(isAdmin && !e.target.closest('#modeIndicator')) { 
@@ -870,7 +836,7 @@
             } 
         });
 
-        function initMapWithRetry() {
+        window.initMapWithRetry = function() {
             if (typeof naver === 'undefined' || !naver.maps) {
                 console.log("네이버 지도 API 응답 대기 중...");
                 return;
@@ -881,9 +847,9 @@
                 map = new naver.maps.Map('map', { center: new naver.maps.LatLng(36.7696, 126.9314), zoom: 15 });
                 drawMarkers(restaurants.filter(r => !r.isHidden));
             } catch(e) { console.error("지도 초기화 오류:", e); }
-        }
+        };
 
-        function drawMarkers(list, highlightId = null) {
+        window.drawMarkers = function(list, highlightId = null) {
             if (typeof naver === 'undefined' || !map) return;
             markers.forEach(m => m.setMap(null)); markers = [];
             list.forEach(rest => {
@@ -901,9 +867,9 @@
                 naver.maps.Event.addListener(marker, 'click', function() { openInfoPanel(rest.id); });
                 markers.push(marker);
             });
-        }
+        };
 
-        function handleSearch() {
+        window.handleSearch = function() {
             const query = document.getElementById('searchInput').value.toLowerCase().trim();
             const resultBox = document.getElementById('searchResults');
             
@@ -932,20 +898,20 @@
                 resultBox.innerHTML = `<div class="search-item" style="color:#999; cursor:default;">결과가 없습니다.</div>`;
                 resultBox.style.display = 'block';
             }
-        }
+        };
 
-        function quickFilter(tag) { document.getElementById('searchInput').value = tag; handleSearch(); }
+        window.quickFilter = function(tag) { document.getElementById('searchInput').value = tag; handleSearch(); };
 
-        function selectRestaurant(id) {
+        window.selectRestaurant = function(id) {
             document.getElementById('searchResults').style.display = 'none';
             const rest = restaurants.find(r => r.id === id);
             if (rest) { 
                 try { if(typeof naver !== 'undefined' && map) { map.morph(new naver.maps.LatLng(rest.lat, rest.lng), 16); drawMarkers(restaurants.filter(r => !r.isHidden), id); } } catch(e){} 
                 openInfoPanel(id); 
             }
-        }
+        };
 
-        function triggerRandomPick(type) {
+        window.triggerRandomPick = function(type) {
             let activeList = restaurants.filter(r => !r.isHidden && r.type === type);
             if(isFavFilterActive) activeList = activeList.filter(r => favorites.includes(r.id));
             
@@ -957,9 +923,9 @@
             const picked = activeList[Math.floor(Math.random() * activeList.length)];
             try { if(typeof naver !== 'undefined' && map) { map.morph(new naver.maps.LatLng(picked.lat, picked.lng), 16); drawMarkers(activeList, picked.id); } } catch(e){}
             setTimeout(() => { openInfoPanel(picked.id); }, 500);
-        }
+        };
 
-        function generateCrossSuggestHtml(targetLat, targetLng, currentType) {
+        window.generateCrossSuggestHtml = function(targetLat, targetLng, currentType) {
             let targetType = currentType === 'restaurant' ? 'cafe' : 'restaurant';
             let targetIcon = currentType === 'restaurant' ? '☕' : '🍽️';
             let targetTitle = currentType === 'restaurant' ? '식후 추천 카페' : '주변 식당 추천';
@@ -984,9 +950,9 @@
                 return html;
             }
             return '';
-        }
+        };
 
-        function renderThumbnail(rest, containerId) {
+        window.renderThumbnail = function(rest, containerId) {
             const container = document.getElementById(containerId);
             if (rest.photos && rest.photos.length > 0) {
                 container.innerHTML = `
@@ -995,9 +961,9 @@
                         ${rest.photos.length > 1 ? `<div style="position:absolute; bottom:10px; right:10px; background:rgba(0,0,0,0.7); color:white; padding:4px 10px; border-radius:15px; font-size:12px; font-weight:bold;">+${rest.photos.length - 1}장 더보기</div>` : ''}
                     </div>`;
             } else { container.innerHTML = `<div class="empty-photo">📷 등록된 사진이 없습니다.</div>`; }
-        }
+        };
 
-        function openPhotoModal(restId) {
+        window.openPhotoModal = function(restId) {
             const rest = restaurants.find(r => r.id === restId);
             if(!rest || !rest.photos || rest.photos.length === 0) return;
             currentPhotoArray = rest.photos; currentPhotoIndex = 0;
@@ -1006,30 +972,31 @@
             const modal = document.getElementById('photoViewerModal');
             modal.style.display = 'flex';
             modal.classList.add('show');
-        }
+        };
         
-        function updatePhotoModal() {
+        window.updatePhotoModal = function() {
             document.getElementById('photoModalImg').src = currentPhotoArray[currentPhotoIndex];
             document.getElementById('photoModalIndicator').innerText = `${currentPhotoIndex + 1} / ${currentPhotoArray.length}`;
-        }
+        };
         
-        function nextPhoto() {
+        window.nextPhoto = function() {
             if(currentPhotoIndex < currentPhotoArray.length - 1) currentPhotoIndex++; else currentPhotoIndex = 0;
             updatePhotoModal();
-        }
+        };
         
-        function prevPhoto() {
+        window.prevPhoto = function() {
             if(currentPhotoIndex > 0) currentPhotoIndex--; else currentPhotoIndex = currentPhotoArray.length - 1;
             updatePhotoModal();
-        }
+        };
         
-        function closePhotoModal() { 
+        window.closePhotoModal = function() { 
             const modal = document.getElementById('photoViewerModal');
             modal.style.display = 'none';
             modal.classList.remove('show');
-        }
+        };
 
-        function openInfoPanel(id) {
+        // 🚨 뼈대 재배치 (정보 패널)
+        window.openInfoPanel = function(id) {
             const rest = restaurants.find(r => r.id === id); if(!rest) return;
             currentInfoRestId = id;
             
@@ -1057,33 +1024,35 @@
             
             let partnerHtml = rest.isPartner ? `<div style="background:#F3E5F5; color:var(--partner-color); padding:10px 14px; border-radius:10px; font-size:14px; font-weight:700; margin-bottom:12px;">🤝 순천향대 협약: ${rest.partnerBenefit || '혜택 제공'}</div>` : '';
 
+            // [주소/시간] 업데이트
             document.getElementById('infoMetaArea').innerHTML = `
                 ${partnerHtml}
                 <div><strong>📍 주소:</strong> ${rest.address || '정보 없음'}</div>
                 <div style="margin-top:4px;"><strong>⏱️ 시간:</strong> <span class="time-badge">${rest.time || '정보 없음'}</span></div>
             `;
             
-            document.getElementById('infoTagsArea').innerHTML = rest.tags.map(t => `<span class="tag-badge">${t}</span>`).join('');
+            // [해시태그] 업데이트
+            document.getElementById('infoTagsArea').innerHTML = (rest.tags||[]).map(t => `<span class="tag-badge">${t}</span>`).join('');
             
             document.getElementById('nearbyCrossArea').innerHTML = generateCrossSuggestHtml(rest.lat, rest.lng, rest.type);
             renderThumbnail(rest, 'infoMenuPhoto');
             renderInfoReviews();
             document.getElementById('infoPanel').style.display = 'flex';
             setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 100);
-        }
+        };
 
-        function closeInfoPanel() { 
+        window.closeInfoPanel = function() { 
             document.getElementById('infoPlaceholder').style.display = 'flex'; document.getElementById('infoContent').style.display = 'none';
             if(window.innerWidth <= 768) { document.getElementById('infoPanel').classList.remove('mobile-open'); }
             currentInfoRestId = null;
-        }
+        };
 
-        function increaseLike(id, btnElement) {
+        window.increaseLike = function(id, btnElement) {
             const idx = restaurants.findIndex(r => r.id === id); restaurants[idx].likes++; saveMasterDataSilent(); 
             if (btnElement) btnElement.innerHTML = `❤️ 추천 ${restaurants[idx].likes}`; renderUserList(); 
-        }
+        };
 
-        function renderInfoReviews() {
+        window.renderInfoReviews = function() {
             const rest = restaurants.find(r => r.id === currentInfoRestId);
             const container = document.getElementById('infoReviews'); container.innerHTML = '';
             if(!rest || !rest.reviews || rest.reviews.length === 0) { container.innerHTML = '<div style="color:#999; font-size:13px; text-align:center; padding:15px 0;">작성된 한줄평이 없습니다.</div>'; return; }
@@ -1098,9 +1067,9 @@
                         <div class="review-text">${rev.text}</div>
                     </div>`; 
             });
-        }
+        };
 
-        function addReview() {
+        window.addReview = function() {
             const ratingInput = document.getElementById('newReviewRating');
             const nicknameInput = document.getElementById('newReviewNickname');
             const textInput = document.getElementById('newReviewInput');
@@ -1123,9 +1092,9 @@
             textInput.value = '';
             
             document.getElementById('slideNewReviewNickname').value = nickname;
-        }
+        };
 
-        function renderUserList() {
+        window.renderUserList = function() {
             const tbody = document.getElementById('user-list-tbody'); if(!tbody) return;
             
             let sortedList = [...restaurants].filter(r => !r.isHidden);
@@ -1165,16 +1134,17 @@
                         <span class="time-badge" style="font-size:12px; color:var(--text-muted);">${r.time || '정보 없음'}</span>
                     </td>
                     <td>
-                        <div>${r.tags.map(t => `<span class="tag-badge">${t}</span>`).join('')}</div>
+                        <div>${(r.tags||[]).map(t => `<span class="tag-badge">${t}</span>`).join('')}</div>
                     </td>
                     <td style="text-align: center;"><div class="like-btn" onclick="openSlidePanel(${r.id})">❤️ ${r.likes}</div></td>
                 </tr>`;
             }).join('');
-        }
+        };
 
-        function openFromList(id) { switchTab('tab-home', document.querySelectorAll('.nav-item')[1]); selectRestaurant(id); }
+        window.openFromList = function(id) { switchTab('tab-home', document.querySelectorAll('.nav-item')[1]); selectRestaurant(id); };
 
-        function openSlidePanel(id) {
+        // 🚨 뼈대 재배치 (슬라이드 패널)
+        window.openSlidePanel = function(id) {
             const rest = restaurants.find(r => r.id === id); if(!rest) return;
             slideRestId = id;
             
@@ -1204,7 +1174,7 @@
                 <div style="margin-top:4px;"><strong>⏱️ 시간:</strong> <span class="time-badge">${rest.time || '정보 없음'}</span></div>
             `;
             
-            document.getElementById('slideTagsArea').innerHTML = rest.tags.map(t => `<span class="tag-badge">${t}</span>`).join('');
+            document.getElementById('slideTagsArea').innerHTML = (rest.tags||[]).map(t => `<span class="tag-badge">${t}</span>`).join('');
             
             document.getElementById('slideNearbyCrossArea').innerHTML = generateCrossSuggestHtml(rest.lat, rest.lng, rest.type);
             renderThumbnail(rest, 'slideMenuPhoto');
@@ -1213,14 +1183,14 @@
             const overlay = document.getElementById('slideOverlay');
             overlay.style.display = 'block';
             setTimeout(() => { document.getElementById('slidePanel').classList.add('open'); }, 10);
-        }
+        };
         
-        function closeSlidePanel() {
+        window.closeSlidePanel = function() {
             document.getElementById('slidePanel').classList.remove('open');
             setTimeout(() => { document.getElementById('slideOverlay').style.display = 'none'; }, 300);
-        }
+        };
         
-        function renderSlideReviews() {
+        window.renderSlideReviews = function() {
             const rest = restaurants.find(r => r.id === slideRestId);
             const container = document.getElementById('slideReviews'); container.innerHTML = '';
             if(!rest.reviews || rest.reviews.length === 0) { container.innerHTML = '<div style="color:#999; font-size:14px; text-align:center; padding:20px;">첫 리뷰를 남겨주세요!</div>'; return; }
@@ -1235,9 +1205,9 @@
                         <div class="review-text">${rev.text}</div>
                     </div>`; 
             });
-        }
+        };
         
-        function addReviewFromSlide() {
+        window.addReviewFromSlide = function() {
             const ratingInput = document.getElementById('slideNewReviewRating');
             const nicknameInput = document.getElementById('slideNewReviewNickname');
             const textInput = document.getElementById('slideNewReview');
@@ -1259,14 +1229,14 @@
             textInput.value = '';
             
             document.getElementById('newReviewNickname').value = nickname;
-        }
+        };
         
-        function increaseLikeFromSlide(id, btnElement) {
+        window.increaseLikeFromSlide = function(id, btnElement) {
             const idx = restaurants.findIndex(r => r.id === id); restaurants[idx].likes++; saveMasterDataSilent();
             if(btnElement) btnElement.innerText = `❤️ 추천 ${restaurants[idx].likes}`; renderUserList();
-        }
+        };
 
-        function submitSuggestion() {
+        window.submitSuggestion = function() {
             const type = document.querySelector('input[name="suggestType"]:checked').value;
             const subCategory = document.getElementById('suggestSubCategory').value;
             const name = document.getElementById('suggestName').value.trim();
@@ -1280,20 +1250,20 @@
 
             processMultipleImages(photoInput.files, function(photosArray) {
                 suggestions.push({ id: Date.now(), type, subCategory, name, address: addr, time, tags: tagsArray, photos: photosArray });
-                localStorage.setItem('sch_suggest_v19_3', JSON.stringify(suggestions)); 
+                localStorage.setItem('sch_suggest_v20', JSON.stringify(suggestions)); 
                 updateAppView(); alert("제보가 완료되었습니다.");
                 ['suggestName', 'suggestAddr', 'suggestTime', 'suggestTags'].forEach(id => document.getElementById(id).value = '');
                 photoInput.value = '';
             });
-        }
+        };
 
-        function togglePartnerInput(mode) {
+        window.togglePartnerInput = function(mode) {
             const checkbox = document.getElementById(mode === 'add' ? 'restPartner' : 'editPartner');
             const input = document.getElementById(mode === 'add' ? 'restPartnerBenefit' : 'editPartnerBenefit');
             if(input) input.style.display = checkbox.checked ? 'block' : 'none';
-        }
+        };
 
-        function checkAdminPassword() {
+        window.checkAdminPassword = function() {
             if(document.getElementById('adminPassword').value === "1234") {
                 isAdmin = true;
                 document.getElementById('btnAdminLogin').style.display = 'none'; document.getElementById('adminMenuGroup').style.display = 'flex'; 
@@ -1302,9 +1272,9 @@
                 switchTab('tab-admin-manage', document.querySelectorAll('.admin-nav-item')[3]); 
                 updateAppView();
             } else alert("비밀번호가 틀렸습니다.");
-        }
+        };
 
-        function renderAdminAllReviews() {
+        window.renderAdminAllReviews = function() {
             const tbody = document.getElementById('admin-all-reviews-tbody');
             if(!tbody) return;
             
@@ -1343,9 +1313,9 @@
                     </td>
                 </tr>
             `).join('');
-        }
+        };
 
-        function deleteReviewFromAll(restId, reviewIdx) {
+        window.deleteReviewFromAll = function(restId, reviewIdx) {
             if(confirm("이 리뷰를 완전히 삭제하시겠습니까?")) {
                 const idx = restaurants.findIndex(r => r.id === restId);
                 if(idx !== -1) {
@@ -1355,9 +1325,9 @@
                     alert("삭제되었습니다.");
                 }
             }
-        }
+        };
 
-        function renderAdminSuggestList() {
+        window.renderAdminSuggestList = function() {
             const tbody = document.getElementById('admin-suggest-tbody'); if(!tbody) return;
             if(suggestions.length === 0) { tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; padding:25px; color:#999;">보관함이 비어있습니다.</td></tr>`; return; }
             tbody.innerHTML = suggestions.map(s => {
@@ -1384,9 +1354,9 @@
                     </td>
                 </tr>`;
             }).join('');
-        }
+        };
 
-        function approveSuggestion(id) {
+        window.approveSuggestion = function(id) {
             const lat = parseFloat(document.getElementById(`approveLat_${id}`).value);
             const lng = parseFloat(document.getElementById(`approveLng_${id}`).value);
             if(isNaN(lat) || isNaN(lng)) return alert("승인을 위해 좌표를 입력해주세요.");
@@ -1394,13 +1364,13 @@
             const item = suggestions.find(s => s.id === id);
             restaurants.push({ id: Date.now(), type: item.type, subCategory: item.subCategory || '기타', name: item.name, address: item.address, lat: lat, lng: lng, photos: item.photos || [], reviews: [], tags: item.tags || [], likes: 0, isHidden: false, time: item.time || "정보 없음", isPartner: false, partnerBenefit: "", regDate: getTodayDateStr() });
             suggestions = suggestions.filter(s => s.id !== id);
-            localStorage.setItem('sch_suggest_v19_3', JSON.stringify(suggestions)); 
+            localStorage.setItem('sch_suggest_v20', JSON.stringify(suggestions)); 
             saveMasterDataSilent(); updateAppView(); alert("승인되었습니다.");
-        }
+        };
         
-        function rejectSuggestion(id) { if(confirm("반려하시겠습니까?")) { suggestions = suggestions.filter(s => s.id !== id); localStorage.setItem('sch_suggest_v19_3', JSON.stringify(suggestions)); updateAppView(); } }
+        window.rejectSuggestion = function(id) { if(confirm("반려하시겠습니까?")) { suggestions = suggestions.filter(s => s.id !== id); localStorage.setItem('sch_suggest_v20', JSON.stringify(suggestions)); updateAppView(); } };
 
-        function addRestaurant() {
+        window.addRestaurant = function() {
             const type = document.querySelector('input[name="restType"]:checked').value;
             const subCategory = document.getElementById('restSubCategory').value;
             const isPartner = document.getElementById('restPartner').checked;
@@ -1427,18 +1397,18 @@
             ['restName', 'restAddr', 'restLat', 'restLng', 'restTime', 'restTags', 'restPhoto', 'restPartnerBenefit'].forEach(id => document.getElementById(id).value = '');
             document.getElementById('restPartner').checked = false; document.getElementById('restPartnerBenefit').style.display = 'none';
             alert("공식 등록되었습니다.");
-        }
+        };
 
-        function filterAdminList() {
+        window.filterAdminList = function() {
             const query = document.getElementById('adminSearchInput').value.toLowerCase();
             const rows = document.querySelectorAll('#admin-rest-tbody tr');
             rows.forEach(row => {
                 const nameAttr = row.getAttribute('data-name');
                 if(nameAttr) row.style.display = nameAttr.includes(query) ? '' : 'none';
             });
-        }
+        };
 
-        function renderAdminList() {
+        window.renderAdminList = function() {
             const tbody = document.getElementById('admin-rest-tbody'); if(!tbody) return;
             if(restaurants.length === 0) { tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; padding:30px;">데이터가 없습니다.</td></tr>`; return; }
             
@@ -1509,13 +1479,13 @@
                         </tr>`;
                 }
             }).join('');
-        }
+        };
 
-        function toggleHide(id) { const idx = restaurants.findIndex(r => r.id === id); restaurants[idx].isHidden = !restaurants[idx].isHidden; saveMasterDataSilent(); updateAppView(); }
-        function startEdit(id) { editingRestId = id; renderAdminList(); }
-        function cancelEdit() { editingRestId = null; renderAdminList(); }
+        window.toggleHide = function(id) { const idx = restaurants.findIndex(r => r.id === id); restaurants[idx].isHidden = !restaurants[idx].isHidden; saveMasterDataSilent(); updateAppView(); };
+        window.startEdit = function(id) { editingRestId = id; renderAdminList(); };
+        window.cancelEdit = function() { editingRestId = null; renderAdminList(); };
         
-        function saveEdit(id) {
+        window.saveEdit = function(id) {
             const type = document.getElementById(`editType_${id}`).value;
             const subCategory = document.getElementById(`editSubCategory_${id}`).value;
             const name = document.getElementById(`editName_${id}`).value.trim();
@@ -1544,11 +1514,11 @@
                     restaurants[idx].photos = photosArray; finishSaveEdit();
                 });
             } else { finishSaveEdit(); }
-        }
-        function finishSaveEdit() { editingRestId = null; saveMasterDataSilent(); updateAppView(); filterAdminList(); }
-        function deleteRestaurant(id) { if(confirm("영구 삭제하시겠습니까?")) { restaurants = restaurants.filter(r => r.id !== id); saveMasterDataSilent(); updateAppView(); } }
+        };
+        window.finishSaveEdit = function() { editingRestId = null; saveMasterDataSilent(); updateAppView(); filterAdminList(); };
+        window.deleteRestaurant = function(id) { if(confirm("영구 삭제하시겠습니까?")) { restaurants = restaurants.filter(r => r.id !== id); saveMasterDataSilent(); updateAppView(); } };
 
-        function openAdminReviewModal(id) {
+        window.openAdminReviewModal = function(id) {
             adminReviewRestId = id;
             const rest = restaurants.find(r => r.id === id);
             const listDiv = document.getElementById('adminReviewList'); listDiv.innerHTML = '';
@@ -1565,25 +1535,24 @@
             const modal = document.getElementById('adminReviewModal');
             modal.style.display = 'flex';
             modal.classList.add('show');
-        }
+        };
         
-        function closeAdminReviewModal() { 
+        window.closeAdminReviewModal = function() { 
             const modal = document.getElementById('adminReviewModal');
             modal.style.display = 'none';
             modal.classList.remove('show');
-        }
+        };
         
-        function deleteReviewAdmin(restId, reviewIdx) {
+        window.deleteReviewAdmin = function(restId, reviewIdx) {
             if(confirm("이 리뷰를 삭제하시겠습니까?")) {
                 const idx = restaurants.findIndex(r => r.id === restId);
                 restaurants[idx].reviews.splice(reviewIdx, 1);
                 saveMasterDataSilent(); openAdminReviewModal(restId);
             }
-        }
+        };
 
-        function downloadCSV() {
-            let csv = '﻿식당명,대분류,소분류,주소,위도,경도,태그,추천수,협약여부,협약혜택,등록일자
-';
+        window.downloadCSV = function() {
+            let csv = '\uFEFF식당명,대분류,소분류,주소,위도,경도,태그,추천수,협약여부,협약혜택,등록일자\n';
             restaurants.forEach(r => {
                 const safeName = r.name.replace(/,/g, ' ');
                 const typeName = r.type === 'cafe' ? '카페' : '식당';
@@ -1592,17 +1561,16 @@
                 const tags = (r.tags||[]).join(' ');
                 const partner = r.isPartner ? 'O' : 'X';
                 const benefit = (r.partnerBenefit || '').replace(/,/g, ' ');
-                csv += `${safeName},${typeName},${subCat},${safeAddr},${r.lat},${r.lng},${tags},${r.likes},${partner},${benefit},${r.regDate || '-'}
-`;
+                csv += `${safeName},${typeName},${subCat},${safeAddr},${r.lat},${r.lng},${tags},${r.likes},${partner},${benefit},${r.regDate || '-'}\n`;
             });
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement("a"); link.href = URL.createObjectURL(blob);
             link.download = `SCH_점심플랫폼_백업_${getTodayDateStr()}.csv`;
             link.style.display = 'none'; document.body.appendChild(link); link.click(); document.body.removeChild(link);
-        }
+        };
 
         // =====================================
-        // 앱 최우선 실행 (오류 방어막 포함)
+        // 앱 최우선 실행
         // =====================================
         function bootApp() {
             try {
@@ -1613,8 +1581,8 @@
                     if(tb) tb.innerHTML = "❯❯";
                 }
 
-                let savedMaster = localStorage.getItem('sch_master_v19_3');
-                if(!savedMaster) { savedMaster = localStorage.getItem('sch_master_v19_2') || localStorage.getItem('sch_master_v19_1') || localStorage.getItem('sch_master_v19'); }
+                let savedMaster = localStorage.getItem('sch_master_v20');
+                if(!savedMaster) { savedMaster = localStorage.getItem('sch_master_v19_3') || localStorage.getItem('sch_master_v19_2') || localStorage.getItem('sch_master_v19_1'); }
                 
                 let parsedMaster = safeParse(savedMaster, null);
                 if (Array.isArray(parsedMaster)) { restaurants = parsedMaster; } 
@@ -1626,13 +1594,12 @@
                     if(Array.isArray(parsedFav)) favorites = parsedFav;
                 }
 
-                let savedSuggest = localStorage.getItem('sch_suggest_v19_3') || localStorage.getItem('sch_suggest_v19_2') || localStorage.getItem('sch_suggest_v19_1');
+                let savedSuggest = localStorage.getItem('sch_suggest_v20') || localStorage.getItem('sch_suggest_v19_3');
                 if (savedSuggest) {
                     let parsedSug = safeParse(savedSuggest, []);
                     if(Array.isArray(parsedSug)) suggestions = parsedSug;
                 }
 
-                // 무결점 마이그레이션
                 restaurants.forEach(r => {
                     if(!r.subCategory) { r.subCategory = r.type === 'cafe' ? '카페' : '기타'; }
                     if(Array.isArray(r.reviews)) { 
@@ -1655,10 +1622,8 @@
                     if(el2) el2.value = savedNick;
                 }
 
-                // 앱 즉시 렌더링
                 updateAppView();
 
-                // 지도 호출
                 if (typeof naver !== 'undefined' && naver.maps) {
                     initMapWithRetry();
                 } else {
@@ -1679,8 +1644,7 @@
             }
         }
 
-        // DOM 이벤트를 기다리지 않고 즉시 실행
-        bootApp();
+        window.onload = bootApp;
 
     </script>
 </body>
